@@ -7,5 +7,176 @@
     "entry_price": 95109.01,
     "timestamp": "2026-01-18 15:38:10",
     "status": "ACTIVE"
+  },
+  {
+    "id": 2,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.09455377604181715,
+    "entry_price": 95183.93,
+    "timestamp": "2026-01-18 15:51:19",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 3,
+    "symbol": "ETH/USDT",
+    "action": "BUY",
+    "quantity": 2.4429672702705965,
+    "entry_price": 3315.64,
+    "timestamp": "2026-01-18 15:52:04",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 4,
+    "symbol": "SOL/USDT",
+    "action": "BUY",
+    "quantity": 51.20101137800253,
+    "entry_price": 142.38,
+    "timestamp": "2026-01-18 15:52:07",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 5,
+    "symbol": "BNB/USDT",
+    "action": "BUY",
+    "quantity": 6.928852794880189,
+    "entry_price": 946.91,
+    "timestamp": "2026-01-18 15:55:22",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 6,
+    "symbol": "BNB/USDT",
+    "action": "BUY",
+    "quantity": 6.235967515392171,
+    "entry_price": 946.91,
+    "timestamp": "2026-01-18 15:55:23",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 7,
+    "symbol": "BNB/USDT",
+    "action": "BUY",
+    "quantity": 5.612370763852954,
+    "entry_price": 946.91,
+    "timestamp": "2026-01-18 15:55:25",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 8,
+    "symbol": "BNB/USDT",
+    "action": "BUY",
+    "quantity": 5.051453767756244,
+    "entry_price": 946.85,
+    "timestamp": "2026-01-18 15:55:38",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 9,
+    "symbol": "BNB/USDT",
+    "action": "BUY",
+    "quantity": 4.546308390980621,
+    "entry_price": 946.85,
+    "timestamp": "2026-01-18 15:55:39",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 10,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.04070634155290368,
+    "entry_price": 95174.48,
+    "timestamp": "2026-01-18 16:06:26",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 11,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.036635707397613314,
+    "entry_price": 95174.48,
+    "timestamp": "2026-01-18 16:06:32",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 12,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.03297214012224077,
+    "entry_price": 95174.47,
+    "timestamp": "2026-01-18 16:07:11",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 13,
+    "symbol": "ETH/USDT",
+    "action": "BUY",
+    "quantity": 0.8515069749971358,
+    "entry_price": 3316.82,
+    "timestamp": "2026-01-18 16:08:43",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 14,
+    "symbol": "BNB/USDT",
+    "action": "BUY",
+    "quantity": 2.6855139706173206,
+    "entry_price": 946.51,
+    "timestamp": "2026-01-18 16:08:43",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 15,
+    "symbol": "BNB/USDT",
+    "action": "BUY",
+    "quantity": 2.4169625735555886,
+    "entry_price": 946.51,
+    "timestamp": "2026-01-18 16:09:09",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 16,
+    "symbol": "BNB/USDT",
+    "action": "BUY",
+    "quantity": 2.1746000432472434,
+    "entry_price": 946.8,
+    "timestamp": "2026-01-18 16:16:34",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 17,
+    "symbol": "BNB/USDT",
+    "action": "BUY",
+    "quantity": 1.9571400389225195,
+    "entry_price": 946.8,
+    "timestamp": "2026-01-18 16:16:34",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 18,
+    "symbol": "BNB/USDT",
+    "action": "BUY",
+    "quantity": 1.7614260350302675,
+    "entry_price": 946.8,
+    "timestamp": "2026-01-18 16:16:35",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 19,
+    "symbol": "BNB/USDT",
+    "action": "BUY",
+    "quantity": 1.5852834315272406,
+    "entry_price": 946.8,
+    "timestamp": "2026-01-18 16:16:35",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 20,
+    "symbol": "BNB/USDT",
+    "action": "BUY",
+    "quantity": 1.4267550883745164,
+    "entry_price": 946.8,
+    "timestamp": "2026-01-18 16:16:35",
+    "status": "ACTIVE"
   }
 ]

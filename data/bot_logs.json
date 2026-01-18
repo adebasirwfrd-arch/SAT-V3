@@ -3,5 +3,100 @@
     "timestamp": "2026-01-18 15:38:10",
     "type": "TRADE",
     "message": "BUY 0.105143 BTC/USDT @ $95109.01 ($10000.00)"
+  },
+  {
+    "timestamp": "2026-01-18 15:51:19",
+    "type": "TRADE",
+    "message": "BUY 0.094554 BTC/USDT @ $95183.93 ($9000.00)"
+  },
+  {
+    "timestamp": "2026-01-18 15:52:04",
+    "type": "TRADE",
+    "message": "BUY 2.442967 ETH/USDT @ $3315.64 ($8100.00)"
+  },
+  {
+    "timestamp": "2026-01-18 15:52:07",
+    "type": "TRADE",
+    "message": "BUY 51.201011 SOL/USDT @ $142.38 ($7290.00)"
+  },
+  {
+    "timestamp": "2026-01-18 15:55:22",
+    "type": "TRADE",
+    "message": "BUY 6.928853 BNB/USDT @ $946.91 ($6561.00)"
+  },
+  {
+    "timestamp": "2026-01-18 15:55:23",
+    "type": "TRADE",
+    "message": "BUY 6.235968 BNB/USDT @ $946.91 ($5904.90)"
+  },
+  {
+    "timestamp": "2026-01-18 15:55:25",
+    "type": "TRADE",
+    "message": "BUY 5.612371 BNB/USDT @ $946.91 ($5314.41)"
+  },
+  {
+    "timestamp": "2026-01-18 15:55:38",
+    "type": "TRADE",
+    "message": "BUY 5.051454 BNB/USDT @ $946.85 ($4782.97)"
+  },
+  {
+    "timestamp": "2026-01-18 15:55:39",
+    "type": "TRADE",
+    "message": "BUY 4.546308 BNB/USDT @ $946.85 ($4304.67)"
+  },
+  {
+    "timestamp": "2026-01-18 16:06:26",
+    "type": "TRADE",
+    "message": "BUY 0.040706 BTC/USDT @ $95174.48 ($3874.20)"
+  },
+  {
+    "timestamp": "2026-01-18 16:06:32",
+    "type": "TRADE",
+    "message": "BUY 0.036636 BTC/USDT @ $95174.48 ($3486.78)"
+  },
+  {
+    "timestamp": "2026-01-18 16:07:11",
+    "type": "TRADE",
+    "message": "BUY 0.032972 BTC/USDT @ $95174.47 ($3138.11)"
+  },
+  {
+    "timestamp": "2026-01-18 16:08:43",
+    "type": "TRADE",
+    "message": "BUY 0.851507 ETH/USDT @ $3316.82 ($2824.30)"
+  },
+  {
+    "timestamp": "2026-01-18 16:08:43",
+    "type": "TRADE",
+    "message": "BUY 2.685514 BNB/USDT @ $946.51 ($2541.87)"
+  },
+  {
+    "timestamp": "2026-01-18 16:09:09",
+    "type": "TRADE",
+    "message": "BUY 2.416963 BNB/USDT @ $946.51 ($2287.68)"
+  },
+  {
+    "timestamp": "2026-01-18 16:16:34",
+    "type": "TRADE",
+    "message": "BUY 2.174600 BNB/USDT @ $946.80 ($2058.91)"
+  },
+  {
+    "timestamp": "2026-01-18 16:16:34",
+    "type": "TRADE",
+    "message": "BUY 1.957140 BNB/USDT @ $946.80 ($1853.02)"
+  },
+  {
+    "timestamp": "2026-01-18 16:16:35",
+    "type": "TRADE",
+    "message": "BUY 1.761426 BNB/USDT @ $946.80 ($1667.72)"
+  },
+  {
+    "timestamp": "2026-01-18 16:16:35",
+    "type": "TRADE",
+    "message": "BUY 1.585283 BNB/USDT @ $946.80 ($1500.95)"
+  },
+  {
+    "timestamp": "2026-01-18 16:16:35",
+    "type": "TRADE",
+    "message": "BUY 1.426755 BNB/USDT @ $946.80 ($1350.85)"
   }
 ]

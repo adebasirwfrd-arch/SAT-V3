@@ -31,6 +31,9 @@ active_connections: List[WebSocket] = []
 # System logs for debugging
 system_logs = []
 
+# Global Market Data for Auto-Trading Sync
+global_market_data = {}
+
 def add_log(message):
     """Add log entry with timestamp"""
     timestamp = datetime.now().strftime("%H:%M:%S")
@@ -333,7 +336,8 @@ async def send_command(symbol: str, action: str):
                 'quantity': new_qty,
                 'entry_price': new_entry,
                 'total_cost': new_cost,
-                'current_value': new_qty * current_price
+                'current_value': new_qty * current_price,
+                'highest_price': current_price  # Initialize for Trailing Stop
             }
             
             save_wallet(wallet)
@@ -475,6 +479,8 @@ async def websocket_endpoint(websocket: WebSocket):
                         'sentiment': 'HYPE' if change_pct > 2 else 'FEAR' if change_pct < -2 else 'NORMAL',
                         'regime': 'BULLISH' if change_pct > 0 else 'BEARISH' if change_pct < 0 else 'NEUTRAL'
                     }
+                    # Update global state for trading loop
+                    global_market_data[coin] = assets[coin]
                 except Exception as e:
                     print(f"Error fetching {coin}: {e}")
             
@@ -523,6 +529,12 @@ async def websocket_endpoint(websocket: WebSocket):
                         ticker = exchange.fetch_ticker(symbol)
                         tx['current_price'] = ticker['last']
                         tx['pnl'] = (ticker['last'] - tx['entry_price']) * tx['quantity']
+                        
+                        # Add Trailing Stop Info
+                        if wallet and 'holdings' in wallet and symbol in wallet['holdings']:
+                            holding = wallet['holdings'][symbol]
+                            highest = holding.get('highest_price', tx['current_price'])
+                            tx['stop_loss'] = highest * (1 - 0.02) #  2% default
                     except:
                         pass
             
@@ -553,6 +565,80 @@ async def websocket_endpoint(websocket: WebSocket):
         print(f"WebSocket error: {e}")
         if websocket in active_connections:
             active_connections.remove(websocket)
+
+
+# Configuration
+TRAILING_STOP_PCT = 0.02  # 2% Trailing Stop
+AUTO_TRADE_ENABLED = True
+BUY_THRESHOLD = 70
+SELL_THRESHOLD = 30
+
+async def trading_loop():
+    """Background task for auto-trading and trailing stops"""
+    add_log("Starting Auto-Trading Loop...")
+    while True:
+        try:
+            # 1. Load Data
+            wallet = load_wallet()
+            if not wallet:
+                await asyncio.sleep(5)
+                continue
+                
+            holdings = wallet.get('holdings', {})
+            transactions = load_transactions()
+            
+            # 2. Check Trailing Stops & Take Profits
+            for symbol, holding in list(holdings.items()):
+                # Get current price
+                ticker = exchange.fetch_ticker(symbol) if exchange else {'last': holding['entry_price']}
+                current_price = ticker['last']
+                
+                # Update Highest Price for Trailing Stop
+                highest_price = holding.get('highest_price', holding['entry_price'])
+                if current_price > highest_price:
+                    holding['highest_price'] = current_price
+                    # Update wallet with new highest price
+                    wallet['holdings'][symbol]['highest_price'] = current_price
+                    save_wallet(wallet)
+                
+                # Check Trailing Stop
+                stop_loss_price = highest_price * (1 - TRAILING_STOP_PCT)
+                
+                if current_price < stop_loss_price:
+                    # Trigger Trailing Stop SELL
+                    add_log(f"📉 Trailing Stop Triggered for {symbol}: price ${current_price:.2f} < stop ${stop_loss_price:.2f}")
+                    await send_command(symbol, "FORCE_SELL")
+            
+            # 3. Check Auto-Buy Signals
+            if AUTO_TRADE_ENABLED:
+                # Use global market data to ensure WYSIWYG (What You See Is What You Get)
+                # This syncs the bot decision with the UI display
+                current_time = datetime.now()
+                
+                for coin, data in global_market_data.items():
+                    symbol = data.get('symbol')
+                    if not symbol: continue
+                    
+                    # Skip if already holding
+                    if symbol in holdings:
+                        continue
+                    
+                    # Use the EXACT score displayed on dashboard
+                    score = data.get('council_score', 50)
+                    
+                    if score >= BUY_THRESHOLD:
+                        add_log(f"🤖 Auto-Buy Signal for {symbol} (Score: {score:.1f} > {BUY_THRESHOLD})")
+                        await send_command(symbol, "FORCE_BUY")
+
+            await asyncio.sleep(5) # Run every 5 seconds
+            
+        except Exception as e:
+            print(f"Trading Loop Error: {e}")
+            await asyncio.sleep(5)
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(trading_loop())
 
 if __name__ == "__main__":
     import uvicorn

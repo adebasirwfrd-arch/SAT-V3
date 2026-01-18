@@ -589,6 +589,7 @@
                         <div class="tx-details">
                             ${tx.quantity.toFixed(6)} @ $${tx.entry_price.toFixed(2)}
                             → <span style="color:${priceColor}">$${currentPrice.toFixed(2)}</span>
+                            ${tx.stop_loss ? `<br><span style="color:#ef5350;font-size:0.65rem;">🛑 SL: $${tx.stop_loss.toFixed(2)}</span>` : ''}
                         </div>
                         <div class="tx-pnl ${pnlClass}">${pnlStr}</div>
                     </div>`;
