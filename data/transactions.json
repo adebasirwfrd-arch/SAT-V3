@@ -6,7 +6,10 @@
     "quantity": 0.10514250963184246,
     "entry_price": 95109.01,
     "timestamp": "2026-01-18 15:38:10",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 95250.57,
+    "close_timestamp": "2026-01-18 16:39:43",
+    "pnl": 29.57917366685797
   },
   {
     "id": 2,
@@ -15,7 +18,10 @@
     "quantity": 0.09455377604181715,
     "entry_price": 95183.93,
     "timestamp": "2026-01-18 15:51:19",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 95250.57,
+    "close_timestamp": "2026-01-18 16:39:43",
+    "pnl": 29.57917366685797
   },
   {
     "id": 3,
@@ -24,7 +30,10 @@
     "quantity": 2.4429672702705965,
     "entry_price": 3315.64,
     "timestamp": "2026-01-18 15:52:04",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 3322.16,
+    "close_timestamp": "2026-01-18 16:41:31",
+    "pnl": 20.475193848647905
   },
   {
     "id": 4,
@@ -87,7 +96,10 @@
     "quantity": 0.04070634155290368,
     "entry_price": 95174.48,
     "timestamp": "2026-01-18 16:06:26",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 95250.57,
+    "close_timestamp": "2026-01-18 16:39:43",
+    "pnl": 29.57917366685797
   },
   {
     "id": 11,
@@ -96,7 +108,10 @@
     "quantity": 0.036635707397613314,
     "entry_price": 95174.48,
     "timestamp": "2026-01-18 16:06:32",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 95250.57,
+    "close_timestamp": "2026-01-18 16:39:43",
+    "pnl": 29.57917366685797
   },
   {
     "id": 12,
@@ -105,7 +120,10 @@
     "quantity": 0.03297214012224077,
     "entry_price": 95174.47,
     "timestamp": "2026-01-18 16:07:11",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 95250.57,
+    "close_timestamp": "2026-01-18 16:39:43",
+    "pnl": 29.57917366685797
   },
   {
     "id": 13,
@@ -114,7 +132,10 @@
     "quantity": 0.8515069749971358,
     "entry_price": 3316.82,
     "timestamp": "2026-01-18 16:08:43",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 3322.16,
+    "close_timestamp": "2026-01-18 16:41:31",
+    "pnl": 20.475193848647905
   },
   {
     "id": 14,

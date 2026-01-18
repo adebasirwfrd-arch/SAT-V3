@@ -1,31 +1,21 @@
 {
-  "cash": 12157.665459056927,
+  "cash": 52631.110443282436,
   "holdings": {
-    "BTC/USDT": {
-      "quantity": 0.31001047474641735,
-      "entry_price": 95155.1565347258,
-      "total_cost": 29499.095251900002,
-      "current_value": 29505.082628438657
-    },
-    "ETH/USDT": {
-      "quantity": 3.2944742452677325,
-      "entry_price": 3315.9449889468524,
-      "total_cost": 10924.295364810001,
-      "current_value": 10927.17806618892
-    },
     "SOL/USDT": {
       "quantity": 51.20101137800253,
       "entry_price": 142.38,
       "total_cost": 7290.0,
-      "current_value": 7290.000000000001
+      "current_value": 7290.000000000001,
+      "highest_price": 142.38
     },
     "BNB/USDT": {
       "quantity": 42.382634414136874,
       "entry_price": 946.825143810502,
       "total_cost": 40128.94392423308,
-      "current_value": 40127.87826330479
+      "current_value": 40127.87826330479,
+      "highest_price": 946.825143810502
     }
   },
-  "realized_pnl": 0.0,
-  "max_balance": 100000.0
+  "realized_pnl": 50.054367515505874,
+  "max_balance": 100048.98870658723
 }

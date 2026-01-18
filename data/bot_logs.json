@@ -98,5 +98,15 @@
     "timestamp": "2026-01-18 16:16:35",
     "type": "TRADE",
     "message": "BUY 1.426755 BNB/USDT @ $946.80 ($1350.85)"
+  },
+  {
+    "timestamp": "2026-01-18 16:39:43",
+    "type": "TRADE",
+    "message": "SELL 0.310010 BTC/USDT @ $95250.57 (PnL: +$29.58)"
+  },
+  {
+    "timestamp": "2026-01-18 16:41:31",
+    "type": "TRADE",
+    "message": "SELL 3.294474 ETH/USDT @ $3322.16 (PnL: +$20.48)"
   }
 ]
