@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+venv/
+.DS_Store
+data/BTCUSDT-1m-2017-08-to-2023-03 (Binance SPOT).csv

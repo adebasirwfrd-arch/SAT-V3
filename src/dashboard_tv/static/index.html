@@ -303,6 +303,54 @@
             color: #ffa726;
         }
 
+        .tx-badge {
+            font-size: 0.6rem;
+            padding: 1px 4px;
+            border-radius: 3px;
+            margin-right: 4px;
+        }
+
+        .badge-bot {
+            background: #673ab7;
+            color: white;
+        }
+
+        .badge-manual {
+            background: #009688;
+            color: white;
+        }
+
+        .tx-action-btn {
+            background: #ef5350;
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.65rem;
+            margin-left: 5px;
+        }
+
+        .tx-action-btn:hover {
+            background: #c62828;
+        }
+
+        .liquidate-btn {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.7rem;
+            cursor: pointer;
+            float: right;
+        }
+
+        .liquidate-btn:hover {
+            background: #b71c1c;
+        }
+
         /* Chart Section */
         .chart-section {
             background: #1E222D;
@@ -382,7 +430,10 @@
             <div class="right-panel">
                 <!-- Portfolio Card -->
                 <div class="card portfolio-card">
-                    <div class="portfolio-title">💼 Portfolio</div>
+                    <div class="portfolio-title">
+                        💼 Portfolio
+                        <button class="liquidate-btn" onclick="liquidateAll()">💥 Liquidate All</button>
+                    </div>
                     <div class="portfolio-equity" id="portfolio-equity">$100,000.00</div>
                     <div class="portfolio-params">
                         <div class="portfolio-param"><span>Cash:</span><strong id="cash">$100,000.00</strong></div>
@@ -557,16 +608,33 @@
         }
 
         function sendCommand(symbol, action) {
-            fetch(`/api/command/${symbol.replace('/', '-')}/${action}`, { method: 'POST' })
+            fetch(`/api/command/${symbol.replace('/', '-')}/${action}?source=MANUAL`, { method: 'POST' })
                 .then(r => r.json())
                 .then(d => {
                     if (d.status === 'ok') {
-                        alert(`✅ ${d.message}`);
+                        // Do not alert on success to avoid spamming enter key, just log or silent
+                        // But user wants feedback probably.
+                        console.log(`✅ ${d.message}`);
                     } else {
                         alert(`❌ ${d.message}`);
                     }
                 })
                 .catch(e => alert(`❌ ${e.message}`));
+        }
+
+        function sellPosition(symbol) {
+            if (confirm(`Are you sure you want to SELL ${symbol}?`)) {
+                sendCommand(symbol, 'FORCE_SELL');
+            }
+        }
+
+        function liquidateAll() {
+            if (confirm('⚠️ WARNING: This will SELL ALL active positions immediately!\nAre you sure?')) {
+                fetch('/api/liquidate_all', { method: 'POST' })
+                    .then(r => r.json())
+                    .then(d => alert(d.message))
+                    .catch(e => alert(e.message));
+            }
         }
 
         function updateTransactions(transactions) {
@@ -582,16 +650,29 @@
                 const pnlStr = pnl >= 0 ? `+$${pnl.toFixed(2)}` : `-$${Math.abs(pnl).toFixed(2)}`;
                 const currentPrice = tx.current_price || tx.entry_price;
                 const priceColor = currentPrice >= tx.entry_price ? '#26a69a' : '#ef5350';
+                const source = tx.source || 'MANUAL';
+                const badgeClass = source.includes('BOT') ? 'badge-bot' : 'badge-manual';
+                const badgeIcon = source.includes('BOT') ? '🤖' : '👤';
 
                 return `
-                    <div class="tx-item">
-                        <div class="tx-symbol">${tx.symbol.replace('/USDT', '')}</div>
+                    <div class="tx-item" style="grid-template-columns: 80px 1fr 100px;">
+                        <div class="tx-symbol">
+                            ${tx.symbol.replace('/USDT', '')}
+                            <div style="margin-top:2px;">
+                                <span class="tx-badge ${badgeClass}">${badgeIcon}</span>
+                            </div>
+                        </div>
                         <div class="tx-details">
                             ${tx.quantity.toFixed(6)} @ $${tx.entry_price.toFixed(2)}
                             → <span style="color:${priceColor}">$${currentPrice.toFixed(2)}</span>
                             ${tx.stop_loss ? `<br><span style="color:#ef5350;font-size:0.65rem;">🛑 SL: $${tx.stop_loss.toFixed(2)}</span>` : ''}
                         </div>
-                        <div class="tx-pnl ${pnlClass}">${pnlStr}</div>
+                        <div class="tx-pnl ${pnlClass}">
+                            ${pnlStr}
+                            <div style="margin-top:2px; text-align:right;">
+                                <button class="tx-action-btn" onclick="sellPosition('${tx.symbol}')">Sell ❌</button>
+                            </div>
+                        </div>
                     </div>`;
             }).join('');
         }

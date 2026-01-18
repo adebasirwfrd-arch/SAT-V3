@@ -285,7 +285,7 @@ async def get_transactions():
     return {"transactions": transactions}
 
 @app.post("/api/command/{symbol}/{action}")
-async def send_command(symbol: str, action: str):
+async def send_command(symbol: str, action: str, source: str = "MANUAL"):
     """Execute real trading command on Binance Testnet"""
     symbol = symbol.replace("-", "/")
     add_log(f"Command received: {action} {symbol}")
@@ -351,7 +351,8 @@ async def send_command(symbol: str, action: str):
                 'quantity': lot_size,
                 'entry_price': current_price,
                 'timestamp': timestamp,
-                'status': 'ACTIVE'
+                'status': 'ACTIVE',
+                'source': source
             })
             save_transactions(transactions)
             
@@ -414,6 +415,24 @@ async def send_command(symbol: str, action: str):
     except Exception as e:
         add_log(f"Trade error: {e}")
         return {"status": "error", "message": str(e)}
+@app.post("/api/liquidate_all")
+async def liquidate_all():
+    """Liquidate all active positions"""
+    wallet = load_wallet()
+    holdings = list(wallet.get('holdings', {}).keys())
+    results = []
+    
+    for symbol in holdings:
+        # Create a simplified symbol for the URL/Command logic if needed, 
+        # but send_command handles replacement. 
+        # Here we call python function directly, we need to handle format.
+        # send_command expects "BTC/USDT" format for symbol argument
+        
+        # We call the function directly
+        res = await send_command(symbol, "FORCE_SELL", source="MANUAL_LIQUIDATE")
+        results.append(res)
+        
+    return {"status": "ok", "message": f"Liquidated {len(results)} positions", "details": results}
 
 @app.get("/api/logs")
 async def get_logs():
@@ -607,7 +626,8 @@ async def trading_loop():
                 if current_price < stop_loss_price:
                     # Trigger Trailing Stop SELL
                     add_log(f"📉 Trailing Stop Triggered for {symbol}: price ${current_price:.2f} < stop ${stop_loss_price:.2f}")
-                    await send_command(symbol, "FORCE_SELL")
+                    add_log(f"📉 Trailing Stop Triggered for {symbol}: price ${current_price:.2f} < stop ${stop_loss_price:.2f}")
+                    await send_command(symbol, "FORCE_SELL", source="BOT_TRAILING_STOP")
             
             # 3. Check Auto-Buy Signals
             if AUTO_TRADE_ENABLED:
@@ -628,7 +648,8 @@ async def trading_loop():
                     
                     if score >= BUY_THRESHOLD:
                         add_log(f"🤖 Auto-Buy Signal for {symbol} (Score: {score:.1f} > {BUY_THRESHOLD})")
-                        await send_command(symbol, "FORCE_BUY")
+                        add_log(f"🤖 Auto-Buy Signal for {symbol} (Score: {score:.1f} > {BUY_THRESHOLD})")
+                        await send_command(symbol, "FORCE_BUY", source="BOT_AUTO_BUY")
 
             await asyncio.sleep(5) # Run every 5 seconds
             
