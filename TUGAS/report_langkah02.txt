@@ -1,0 +1,7 @@
+📂 Checking Data Path Config: /Users/izzadev/.gemini/antigravity/scratch/SAT-V3/data/BTCUSDT-1m-2017-08-to-2023-03 (Binance SPOT).csv
+✅ Historical Data File FOUND.
+
+🧪 Generating Dummy Market Data for Logic Test...
+👮‍♂️ Summoning The Trend Master...
+📊 Score: 100 | Signal: BUY
+✅ TEST PASSED: Logic detected Bullish trend.

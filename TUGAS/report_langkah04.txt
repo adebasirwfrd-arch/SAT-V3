@@ -1,0 +1,13 @@
+🧪 Generating Dummy Market Data...
+
+--- 🗳️ COUNCIL VOTING SESSION ---
+👤 The Trend Master: BUY (100) | Above EMA200, Above Cloud, TK Golden Cross
+👤 The Structure Master: NEUTRAL (50) | Middle of Structure
+👤 The Volume Master: SELL (20) | Volume Trend Bearish (OBV < EMA)
+👤 The Indicator Master: SELL (25) | RSI Neutral, MACD Bearish Cross
+👤 The Smart Money Master: NEUTRAL (50) | No FVG detected
+👤 The Pattern Master: NEUTRAL (50) | No pattern detected
+👤 The Geometry Master: NEUTRAL (50) | Price not at Fib level
+--- ⚖️ FINAL VERDICT: NEUTRAL (Score: 52.75) ---
+
+✅ TEST PASSED: The Chairman successfully aggregated votes.

@@ -1,0 +1,23 @@
+🧪 Generating Dummy Market Data...
+
+🏛️ THE COUNCIL IS ASSEMBLING (4 Generals)...
+
+👤 The Trend Master:
+   Score: 100
+   Signal: BUY
+   Reason: Above EMA200, Above Cloud, TK Golden Cross
+
+👤 The Structure Master:
+   Score: 50
+   Signal: NEUTRAL
+   Reason: Middle of Structure
+
+👤 The Volume Master:
+   Score: 80
+   Signal: BUY
+   Reason: Volume Trend Bullish (OBV > EMA)
+
+👤 The Indicator Master:
+   Score: 0
+   Signal: SELL
+   Reason: RSI Overbought, MACD Bearish Cross

@@ -1,0 +1,58 @@
+Langkah 1 adalah yang paling krusial: Setup Canvas, Data Interface, dan Sistem Koordinat (Math).
+
+Tanpa sistem koordinat yang benar (mengubah harga $100 menjadi pixel Y: 50), kita tidak akan bisa menggambar apapun.
+
+Silakan berikan Prompt Tahap 1 ini ke Antigravity/Cursor:
+
+📋 PROMPT TAHAP 1: Foundation & Coordinate System
+Copy & Paste perintah ini:
+
+Plaintext
+
+Act as a Senior Frontend Architect. We are building a high-performance Financial Charting Engine (TradingView Clone) using React, TypeScript, and HTML5 Canvas API.
+
+Current Task: Initialize the Core Engine & Coordinate System.
+
+Please implement the following:
+
+1.  **Project Structure:**
+    * Create a component `ChartCanvas.tsx`.
+    * Use a `useRef` to access the HTML5 Canvas element.
+    * Implement High-DPI scaling (handle `window.devicePixelRatio`) to ensure sharp rendering on retina displays.
+
+2.  **Data Interface:**
+    * Define the standard interface `CandleData`: `{ time: number; open: number; high: number; low: number; close: number; volume: number; }`.
+    * Create a mock data generator function to generate 100 candles of random realistic price data.
+
+3.  **Coordinate System (The Math):**
+    * Create a function or class `ChartScale` that calculates:
+        * `minPrice` and `maxPrice` from the visible data.
+        * `priceToY(price)`: Converts a price value to a Y pixel coordinate.
+        * `timeToX(index)`: Converts a data index to an X pixel coordinate (considering `barSpacing` and `scrollOffset`).
+
+4.  **The Rendering Loop:**
+    * Set up a `draw()` function called via `requestAnimationFrame` for 60fps performance.
+    * **Visual Output for this step:**
+        * Fill background with White (`#FFFFFF`).
+        * Draw the **Grid System** (Vertical lines for Time, Horizontal lines for Price) using the "Ocean Calm" theme color (`#E1ECF2`).
+        * Do NOT draw candles yet. We just want to verify the Grid matches the Coordinate System.
+
+5.  **Styling Constants:**
+    * Use these colors:
+        * Background: `#FFFFFF`
+        * Grid: `#E1ECF2`
+        * Text/Labels: `#546E7A`
+
+Output: Provide the complete code for `ChartCanvas.tsx` and a usage example in `App.tsx`.
+Apa yang diharapkan dari tahap ini?
+Setelah Antigravity selesai mengerjakan ini, Anda harus melihat:
+
+Layar putih bersih di aplikasi Anda.
+
+Garis-garis Grid (kotak-kotak tipis) yang rapi.
+
+Tidak ada error di console.
+
+Jika Anda mengubah ukuran window browser, grid harus tetap tajam (tidak blur).
+
+Katakan "Lanjut" jika kode dari tahap 1 sudah berjalan, dan kita akan masuk ke Tahap 2: Rendering Basic Candles (OHLC).

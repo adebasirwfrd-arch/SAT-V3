@@ -1,0 +1,37 @@
+{
+    "status": "IN_POSITION",
+    "last_update": "2026-01-16 17:35:35",
+    "portfolio": {
+        "cash": 3390.7455755852748,
+        "equity": 4766.825490285199,
+        "realized_pnl": 0.37813678492773306,
+        "max_balance": 10000.0
+    },
+    "positions": {},
+    "holdings": {
+        "ETH/USDT": {
+            "qty": 0.2360737382416787,
+            "entry_price": 3316.8,
+            "current_price": 3299.64,
+            "current_value": 778.9583496517727,
+            "stop_loss": 3090.341337234882,
+            "take_profit": 3769.717325530237,
+            "trailing_phase": 1,
+            "order_id": "SIM-1768551794"
+        },
+        "BTC/USDT": {
+            "qty": 0.006258424121031848,
+            "entry_price": 95609.83,
+            "current_price": 95410.85,
+            "current_value": 597.1215650481515,
+            "stop_loss": 86357.37468292192,
+            "take_profit": 114114.74063415619,
+            "trailing_phase": 1,
+            "order_id": "SIM-1768555174"
+        }
+    },
+    "daily_stats": {
+        "trades_today": 2,
+        "pnl_today": 0.37813678492773306
+    }
+}

@@ -1,0 +1,170 @@
+Sesi Praktikum 6: The Elephant's Memory (State Management)
+
+Kita akan membangun sistem memori persisten (JSON Database) yang menyimpan status trading secara real-time ke hard disk.
+
+Silakan buat file langkah06.txt di folder /TUGAS.
+ROLE: AI Software Engineer (Backend Specialist)
+LOCATION: /Users/izzadev/.gemini/antigravity/scratch/SAT-V3
+
+TASK OBJECTIVE:
+Membangun "State Manager" untuk menyimpan dan memuat status trading dari file JSON. Ini memastikan bot "ingat" posisi terakhirnya meskipun program dimatikan atau laptop restart.
+
+INSTRUCTIONS:
+
+1.  **Implement State Manager**:
+    Buat file `/src/utils/state_manager.py`.
+    
+    Fitur yang dibutuhkan:
+    - **Load State**: Membaca `memory.json`. Jika tidak ada, buat baru dengan status 'IDLE'.
+    - **Save State**: Menyimpan data kritis (Posisi aktif, Entry Price, Current SL, Trailing Phase).
+    - **Reset State**: Mengembalikan status ke 'IDLE' setelah posisi dijual (Liquidated).
+    
+    ```python
+    import json
+    import os
+    from datetime import datetime
+
+    class StateManager:
+        def __init__(self, file_path='data/memory.json'):
+            self.file_path = file_path
+            # Struktur Data Default
+            self.default_state = {
+                "status": "IDLE",       # IDLE, IN_POSITION
+                "last_update": "",
+                "current_position": {
+                    "symbol": "",
+                    "entry_price": 0.0,
+                    "quantity": 0.0,
+                    "stop_loss": 0.0,
+                    "take_profit": 0.0,
+                    "order_id": "",     # ID dari Binance
+                    "trailing_phase": 1 # 1=Breathing, 2=BreakEven, 3=Locking
+                },
+                "daily_stats": {
+                    "trades_today": 0,
+                    "pnl_today": 0.0
+                }
+            }
+            self.state = self.load_state()
+
+        def load_state(self):
+            if not os.path.exists(self.file_path):
+                print("💾 Memory file not found. Creating new brain...")
+                return self.save_state(self.default_state)
+            
+            try:
+                with open(self.file_path, 'r') as f:
+                    return json.load(f)
+            except json.JSONDecodeError:
+                print("⚠️ Memory corrupted! Resetting brain...")
+                return self.save_state(self.default_state)
+
+        def save_state(self, new_state=None):
+            if new_state:
+                self.state = new_state
+            
+            self.state['last_update'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            
+            # Pastikan direktori ada
+            os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
+            
+            with open(self.file_path, 'w') as f:
+                json.dump(self.state, f, indent=4)
+            
+            return self.state
+
+        def update_position(self, entry_data):
+            """Dipanggil saat Bot melakukan BUY"""
+            self.state['status'] = "IN_POSITION"
+            self.state['current_position'] = {
+                "symbol": entry_data['symbol'],
+                "entry_price": entry_data['entry_price'],
+                "quantity": entry_data['quantity'],
+                "stop_loss": entry_data['stop_loss'],
+                "take_profit": entry_data['take_profit'],
+                "order_id": entry_data.get('order_id', 'SIMULATED'),
+                "trailing_phase": 1
+            }
+            self.save_state()
+            print(f"💾 STATE SAVED: Entered position on {entry_data['symbol']}")
+
+        def close_position(self, pnl=0):
+            """Dipanggil saat Bot melakukan SELL/TP/SL"""
+            self.state['status'] = "IDLE"
+            # Reset posisi
+            self.state['current_position'] = self.default_state['current_position']
+            # Update stats
+            self.state['daily_stats']['trades_today'] += 1
+            self.state['daily_stats']['pnl_today'] += pnl
+            
+            self.save_state()
+            print("💾 STATE CLEARED: Position closed. Back to IDLE.")
+    ```
+
+2.  **Test Script (The Amnesia Test)**:
+    Buat file `test_memory.py`.
+    Skenario:
+    1. Bot "Beli" BTC.
+    2. Simpan status.
+    3. Program "Mati" (Simulasi dengan memuat ulang class StateManager baru).
+    4. Cek apakah StateManager baru "ingat" bahwa dia sedang punya BTC.
+    
+    ```python
+    from src.utils.state_manager import StateManager
+    import time
+    import os
+
+    def run_test():
+        print("🧠 TESTING ELEPHANT MEMORY (State Persistence)...\n")
+        
+        # Hapus memory lama biar bersih
+        if os.path.exists('data/memory.json'):
+            os.remove('data/memory.json')
+
+        # 1. Bot Hidup & Beli
+        print("🤖 [SESSION 1] Bot Starting...")
+        brain = StateManager()
+        print(f"   Initial Status: {brain.state['status']}")
+        
+        dummy_trade = {
+            'symbol': 'BTC/USDT',
+            'entry_price': 50000,
+            'quantity': 0.1,
+            'stop_loss': 49000,
+            'take_profit': 52000,
+            'order_id': '882910'
+        }
+        
+        print("   >>> BUY EXECUTED!")
+        brain.update_position(dummy_trade)
+        
+        # 2. Simulasi Mati Lampu (Kill Object)
+        print("\n💥 [CRASH] System going down... (Deleting object)")
+        del brain
+        
+        # 3. Bot Hidup Lagi (Restart)
+        print("\n🤖 [SESSION 2] Bot Restarting (Rebooting)...")
+        new_brain = StateManager() # Load file json yg tadi disimpan
+        
+        current_status = new_brain.state['status']
+        saved_symbol = new_brain.state['current_position']['symbol']
+        saved_price = new_brain.state['current_position']['entry_price']
+        
+        print(f"   Restored Status: {current_status}")
+        print(f"   Restored Position: {saved_symbol} @ ${saved_price}")
+        
+        # 4. Validasi
+        if current_status == "IN_POSITION" and saved_price == 50000:
+            print("\n✅ TEST PASSED: Bot remembers position after restart.")
+        else:
+            print("\n❌ TEST FAILED: Bot suffered amnesia.")
+
+    if __name__ == "__main__":
+        run_test()
+    ```
+
+EXECUTION COMMANDS:
+`python test_memory.py`
+
+OUTPUT EXPECTATION:
+Pastikan script membuat file `data/memory.json` dan Session 2 berhasil membaca data yang ditulis oleh Session 1.

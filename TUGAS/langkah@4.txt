@@ -1,0 +1,259 @@
+Perhatikan log hasil tes Anda:Trend Master: SCORE 100 (BUY) $\rightarrow$ "Arahnya naik!"Indicator Master: SCORE 0 (SELL) $\rightarrow$ "Sudah terlalu tinggi, jual!"Inilah yang saya sebut "The Internal Conflict". Ini bukan bug. Ini adalah fitur.Jika Anda hanya mengikuti Trend Master, Anda akan beli di pucuk. Jika Anda hanya mengikuti Indicator Master, Anda akan keluar terlalu cepat saat harga sedang "terbang" (Strong Rally).Tugas kita sekarang adalah menghadirkan penengah. Kita perlu 3 Jenderal terakhir yang memiliki spesialisasi "Micro-Analysis" untuk melengkapi gambaran besar, dan seorang "Ketua Dewan" (The Chairman) untuk menghitung skor akhir.Sesi Praktikum 4: The Final Verdict (Part 2)Di sesi ini, kita akan menyelesaikan Divisi 1 (The Council) sepenuhnya.Target Operasi:General 5 (Smart Money): Mendeteksi jejak institusi (Fair Value Gap).General 6 (Pattern): Membaca psikologi candle (Engulfing/Morning Star).General 7 (Geometry): Matematika alam (Fibonacci).The Chairman: Algoritma aggregator yang menghitung Weighted Average dari ke-7 jenderal untuk mengambil keputusan final.Silakan buat file langkah04.txt di folder /TUGAS.
+ROLE: AI Software Engineer (Trading Systems Architect)
+LOCATION: /Users/izzadev/.gemini/antigravity/scratch/SAT-V3
+
+TASK OBJECTIVE:
+1. Mengimplementasikan 3 Jenderal terakhir (Smart Money, Pattern, Geometry).
+2. Membuat "The Chairman" (Sistem Voting Terpusat) yang menggabungkan semua suara.
+
+INSTRUCTIONS:
+
+1.  **Implement General 5: The Smart Money Master**:
+    Buat file `/src/council/smart_money_master.py`.
+    Logic: Mendeteksi Fair Value Gap (FVG) Bullish/Bearish sederhana.
+    
+    ```python
+    from .base_general import BaseGeneral
+    import pandas as pd
+
+    class SmartMoneyMaster(BaseGeneral):
+        def __init__(self):
+            super().__init__("The Smart Money Master", weight=0.15)
+
+        def analyze(self, df):
+            # FVG Logic: Celah antara Candle i-1 (High) dan i+1 (Low)
+            # Kita cek 5 candle terakhir saja untuk FVG yang masih "fresh"
+            
+            score = 50
+            reasons = []
+            
+            # Simple FVG Detection (Last 3 candles completed)
+            # Candle 0=terbaru, 1=kemarin, 2=lusa
+            # Bullish FVG: Low[-1] > High[-3]
+            
+            try:
+                c_now = df.iloc[-1]
+                c_prev = df.iloc[-2]
+                c_prev2 = df.iloc[-3]
+                
+                # Cek Bullish FVG (Demand Zone)
+                if df['low'].iloc[-1] > df['high'].iloc[-3]:
+                    score += 20
+                    reasons.append("Resting above Bullish FVG")
+                
+                # Cek Bearish FVG (Supply Zone)
+                if df['high'].iloc[-1] < df['low'].iloc[-3]:
+                    score -= 20
+                    reasons.append("Rejected from Bearish FVG")
+                    
+            except IndexError:
+                reasons.append("Data Insufficient")
+
+            signal = "NEUTRAL"
+            if score >= 60: signal = "BUY"
+            elif score <= 40: signal = "SELL"
+
+            return {'score': score, 'signal': signal, 'reason': ", ".join(reasons)}
+    ```
+
+2.  **Implement General 6: The Pattern Master**:
+    Buat file `/src/council/pattern_master.py`.
+    Logic: Menggunakan `talib` untuk mendeteksi pola candlestick.
+    
+    ```python
+    from .base_general import BaseGeneral
+    import talib
+
+    class PatternMaster(BaseGeneral):
+        def __init__(self):
+            super().__init__("The Pattern Master", weight=0.10)
+
+        def analyze(self, df):
+            open_ = df['open']
+            high = df['high']
+            low = df['low']
+            close = df['close']
+
+            score = 50
+            reasons = []
+
+            # 1. Engulfing
+            engulfing = talib.CDLENGULFING(open_, high, low, close)
+            if engulfing.iloc[-1] == 100:
+                score += 30
+                reasons.append("Bullish Engulfing")
+            elif engulfing.iloc[-1] == -100:
+                score -= 30
+                reasons.append("Bearish Engulfing")
+
+            # 2. Morning/Evening Star
+            morning_star = talib.CDLMORNINGSTAR(open_, high, low, close)
+            evening_star = talib.CDLEVENINGSTAR(open_, high, low, close)
+            
+            if morning_star.iloc[-1] == 100:
+                score += 30
+                reasons.append("Morning Star")
+            if evening_star.iloc[-1] == -100:
+                score -= 30
+                reasons.append("Evening Star")
+
+            # 3. Hammer / Shooting Star
+            hammer = talib.CDLHAMMER(open_, high, low, close)
+            if hammer.iloc[-1] == 100:
+                score += 10
+                reasons.append("Hammer")
+
+            signal = "NEUTRAL"
+            if score >= 60: signal = "BUY"
+            elif score <= 40: signal = "SELL"
+
+            return {'score': score, 'signal': signal, 'reason': ", ".join(reasons)}
+    ```
+
+3.  **Implement General 7: The Geometry Master**:
+    Buat file `/src/council/geometry_master.py`.
+    Logic: Fibonacci Retracement level 0.618 (Golden Ratio).
+    
+    ```python
+    from .base_general import BaseGeneral
+
+    class GeometryMaster(BaseGeneral):
+        def __init__(self):
+            super().__init__("The Geometry Master", weight=0.10)
+
+        def analyze(self, df):
+            # Cari Swing High & Low dalam 50 candle terakhir
+            period = 50
+            if len(df) < period: return {'score': 50, 'signal': 'NEUTRAL', 'reason': 'No Data'}
+            
+            recent_high = df['high'].rolling(period).max().iloc[-1]
+            recent_low = df['low'].rolling(period).min().iloc[-1]
+            current_price = df['close'].iloc[-1]
+            
+            # Hitung Level Fib 0.618 dari range tersebut
+            diff = recent_high - recent_low
+            fib_618 = recent_low + (diff * 0.618) # Golden Pocket Retracement Upside
+            
+            # Toleransi 0.5%
+            tolerance = diff * 0.005
+            
+            score = 50
+            reasons = []
+            
+            # Jika harga berada di dekat level 0.618
+            if abs(current_price - fib_618) < tolerance:
+                score += 30
+                reasons.append("Testing Golden Ratio 0.618")
+            
+            signal = "NEUTRAL"
+            if score >= 60: signal = "BUY"
+            elif score <= 40: signal = "SELL"
+
+            return {'score': score, 'signal': signal, 'reason': ", ".join(reasons)}
+    ```
+
+4.  **Implement The Chairman (Voting System)**:
+    Buat file `/src/council/chairman.py`.
+    Ini adalah otak pusat yang memanggil semua jenderal.
+    
+    ```python
+    import pandas as pd
+    from .trend_master import TrendMaster
+    from .structure_master import StructureMaster
+    from .volume_master import VolumeMaster
+    from .indicator_master import IndicatorMaster
+    from .smart_money_master import SmartMoneyMaster
+    from .pattern_master import PatternMaster
+    from .geometry_master import GeometryMaster
+
+    class TheChairman:
+        def __init__(self):
+            self.generals = [
+                TrendMaster(),
+                StructureMaster(),
+                VolumeMaster(),
+                IndicatorMaster(),
+                SmartMoneyMaster(),
+                PatternMaster(),
+                GeometryMaster()
+            ]
+
+        def solicit_votes(self, df: pd.DataFrame) -> dict:
+            total_score = 0
+            total_weight = 0
+            details = {}
+            
+            print("\n--- 🗳️ COUNCIL VOTING SESSION ---")
+            for general in self.generals:
+                vote = general.analyze(df)
+                
+                # Weighted Score Calculation
+                weighted_s = vote['score'] * general.weight
+                total_score += weighted_s
+                total_weight += general.weight
+                
+                details[general.name] = {
+                    'signal': vote['signal'],
+                    'score': vote['score'],
+                    'weight': general.weight,
+                    'reason': vote['reason']
+                }
+                print(f"👤 {general.name}: {vote['signal']} ({vote['score']}) | {vote['reason']}")
+            
+            final_score = total_score / total_weight if total_weight > 0 else 50
+            
+            # Final Verdict
+            final_signal = "NEUTRAL"
+            if final_score >= 70: final_signal = "STRONG BUY"
+            elif final_score >= 60: final_signal = "BUY"
+            elif final_score <= 30: final_signal = "STRONG SELL"
+            elif final_score <= 40: final_signal = "SELL"
+            
+            print(f"--- ⚖️ FINAL VERDICT: {final_signal} (Score: {final_score:.2f}) ---\n")
+            
+            return {
+                'final_score': final_score,
+                'final_signal': final_signal,
+                'details': details
+            }
+    ```
+
+5.  **Full System Test**:
+    Update `test_council.py` untuk memanggil `TheChairman` saja (lebih bersih).
+    
+    ```python
+    import pandas as pd
+    import numpy as np
+    from src.council.chairman import TheChairman
+
+    def run_test():
+        print("🧪 Generating Dummy Market Data...")
+        # Kita buat data yang sedikit bergejolak (ada naik turun) agar pattern muncul
+        dates = pd.date_range(start='2024-01-01', periods=300, freq='1h')
+        df = pd.DataFrame({'time': dates})
+        df['close'] = np.linspace(100, 150, 300) 
+        # Bikin sedikit noise
+        noise = np.random.normal(0, 2, 300)
+        df['close'] = df['close'] + noise
+        df['open'] = df['close'] - 1 # Biar ada body
+        df['high'] = df['close'] + 2
+        df['low'] = df['close'] - 2
+        df['volume'] = 1000
+
+        chairman = TheChairman()
+        result = chairman.solicit_votes(df)
+        
+        if result['final_signal'] != "":
+            print("✅ TEST PASSED: The Chairman successfully aggregated votes.")
+        else:
+            print("❌ TEST FAILED: No verdict.")
+
+    if __name__ == "__main__":
+        run_test()
+    ```
+
+EXECUTION COMMANDS:
+Jalankan `python test_council.py` dan laporkan hasilnya.
+
+OUTPUT EXPECTATION:
+Saya ingin melihat log "COUNCIL VOTING SESSION" dengan 7 Jenderal memberikan laporan, dan satu baris "FINAL VERDICT" di akhir.

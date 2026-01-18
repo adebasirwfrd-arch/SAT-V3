@@ -1,0 +1,158 @@
+Sekarang, kita masuk ke Sesi Praktikum 5.
+
+Ini adalah momen kritis. Sebuah bot yang pintar trading tapi bodoh mengelola uang akan bangkrut dalam semalam. Kita akan membangun Pilar 3: The Immortal Shield (Manajemen Risiko).
+
+Tugas kita sekarang adalah mengajarkan bot cara menghitung "Seberapa banyak uang yang boleh dipertaruhkan?" sebelum ia menekan tombol beli.
+
+Ingat instruksi Anda: "Setiap 5 sesi yang berhasil buat checkpoint". Selesaikan langkah ini, dan saya akan menerbitkan Laporan Checkpoint I (Grand Summary) kita.
+ROLE: AI Software Engineer (Trading Systems Architect)
+LOCATION: /Users/izzadev/.gemini/antigravity/scratch/SAT-V3
+
+TASK OBJECTIVE:
+1. Membangun "The Risk Manager" (Penghitung Resiko & Ukuran Posisi).
+2. Mengimplementasikan logika Stop Loss berbasis ATR (Average True Range) sesuai Blueprint.
+
+INSTRUCTIONS:
+
+1.  **Implement Risk Manager Logic**:
+    Buat file `/src/utils/risk_manager.py`.
+    Class ini tidak melakukan trading, hanya **Menghitung Matematika**.
+    
+    Logic sesuai Blueprint "The Immortal Shield":
+    - **Risk per Trade**: Max 2% dari Saldo.
+    - **Stop Loss (SL)**: Berbasis ATR (Multiplier 2x atau 3x).
+    - **Position Sizing**: Menghitung jumlah lot (Qty) agar jika kena SL, kerugian finansial tetap terukur (misal rugi fix $20).
+    
+    ```python
+    import pandas as pd
+    
+    class RiskManager:
+        def __init__(self, max_risk_pct=0.02, atr_multiplier=2.0):
+            """
+            max_risk_pct: Persentase resiko per trade (default 2% atau 0.02)
+            atr_multiplier: Jarak SL dalam satuan ATR (default 2x ATR)
+            """
+            self.max_risk_pct = max_risk_pct
+            self.atr_multiplier = atr_multiplier
+
+        def calculate_atr(self, df: pd.DataFrame, period=14):
+            # Menggunakan High-Low jika ATR belum ada, atau pakai pandas_ta
+            # Kita asumsikan df sudah punya kolom OHLC
+            try:
+                # Menggunakan library ta yang sudah diinject di df (via pandas_ta)
+                atr = df.ta.atr(length=period)
+                return atr.iloc[-1]
+            except Exception:
+                # Fallback manual calculation if TA lib fails
+                high_low = df['high'] - df['low']
+                return high_low.rolling(period).mean().iloc[-1]
+
+        def calculate_entry_params(self, account_balance, entry_price, atr_value):
+            """
+            Menghitung:
+            1. Stop Loss Price
+            2. Take Profit Price (R:R 1:2 minimal)
+            3. Quantity (Lot Size) agar resiko terjaga
+            """
+            
+            # 1. Tentukan Jarak Stop Loss (Risk Distance)
+            sl_distance = atr_value * self.atr_multiplier
+            stop_loss_price = entry_price - sl_distance
+            
+            # Cegah error jika SL negatif (jika harga aset terlalu kecil)
+            if stop_loss_price <= 0:
+                stop_loss_price = entry_price * 0.95 # Fallback 5%
+                sl_distance = entry_price - stop_loss_price
+
+            # 2. Hitung Berapa Uang yang Siap "Dibakar" (Risk Amount)
+            risk_amount = account_balance * self.max_risk_pct
+            
+            # 3. Hitung Quantity (Lot Size)
+            # Rumus: Quantity = Risk Amount / Jarak SL
+            # Contoh: Siap rugi $100. Jarak SL $50. Maka beli 2 coin.
+            quantity = risk_amount / sl_distance
+            
+            # 4. Tentukan Take Profit (Minimal 1.5x Risk)
+            tp_distance = sl_distance * 1.5
+            take_profit_price = entry_price + tp_distance
+            
+            return {
+                'entry_price': entry_price,
+                'stop_loss': stop_loss_price,
+                'take_profit': take_profit_price,
+                'quantity': quantity,
+                'risk_amount_usdt': risk_amount,
+                'sl_distance': sl_distance
+            }
+            
+        def check_drawdown(self, initial_balance, current_balance):
+            """Kill Switch: Cek apakah equity turun terlalu dalam"""
+            dd_pct = (initial_balance - current_balance) / initial_balance
+            if dd_pct > 0.10: # Jika drawdown > 10%
+                return True # TRIGGER KILL SWITCH
+            return False
+    ```
+
+2.  **Test Script (The Simulation)**:
+    Buat file `test_risk.py` di root.
+    Kita akan mensimulasikan situasi: Punya uang $1000, mau beli BTC, tapi pasar sedang sangat volatile (ATR tinggi). Berapa BTC yang boleh dibeli?
+    
+    ```python
+    import pandas as pd
+    import numpy as np
+    from src.utils.risk_manager import RiskManager
+    
+    def run_test():
+        print("🛡️ TESTING IMMORTAL SHIELD (Risk Manager)...\n")
+        
+        # 1. Setup Dummy Data for ATR
+        dates = pd.date_range(start='2024-01-01', periods=100, freq='1h')
+        df = pd.DataFrame({'time': dates})
+        df['high'] = np.random.uniform(20100, 20200, 100)
+        df['low']  = np.random.uniform(19800, 19900, 100)
+        df['close'] = (df['high'] + df['low']) / 2
+        # Setup pandas_ta extension
+        import pandas_ta as ta
+        df.ta.strategies = ta.CommonStrategy
+        
+        # 2. Initialize Risk Manager
+        risk_man = RiskManager(max_risk_pct=0.02, atr_multiplier=2.0)
+        
+        # 3. Calculate Logic
+        current_atr = risk_man.calculate_atr(df)
+        print(f"📊 Market Volatility (ATR): {current_atr:.2f}")
+        
+        balance = 10000 # $10,000
+        entry_price = 20000 # BTC Price
+        
+        print(f"💰 Account Balance: ${balance}")
+        print(f"🎯 Entry Price: ${entry_price}")
+        
+        params = risk_man.calculate_entry_params(balance, entry_price, current_atr)
+        
+        print("\n📝 TRADE PLAN CALCULATED:")
+        print(f"   Stop Loss Price : ${params['stop_loss']:.2f}")
+        print(f"   Take Profit     : ${params['take_profit']:.2f} (1.5R)")
+        print(f"   Quantity to Buy : {params['quantity']:.4f} BTC")
+        print(f"   Risk Amount     : ${params['risk_amount_usdt']:.2f} (Max Loss)")
+        
+        # 4. Validation
+        potential_loss = (entry_price - params['stop_loss']) * params['quantity']
+        print(f"\nmath check: Real Potential Loss = ${potential_loss:.2f}")
+        
+        # Toleransi pembulatan floating point
+        if abs(potential_loss - params['risk_amount_usdt']) < 0.1:
+            print("✅ TEST PASSED: Position Sizing protects capital perfectly.")
+        else:
+            print("❌ TEST FAILED: Math mismatch.")
+
+    if __name__ == "__main__":
+        run_test()
+    ```
+
+EXECUTION COMMANDS:
+1. `pip install -r requirements.txt` (Just to be sure environment is consistent).
+2. `python test_risk.py`.
+
+OUTPUT EXPECTATION:
+Jalankan test script. Saya ingin melihat bukti matematika bahwa `Quantity` yang dihitung benar-benar menghasilkan resiko maksimal $200 (2% dari $10,000) jika kena Stop Loss.

@@ -1,0 +1,22 @@
+🧪 Generating Dummy Market Data...
+
+📰 ANALYZING 4 HEADLINES:
+   > Exchange hacked, thousands of Bitcoin stolen... (-0.71)
+   > Government announces strict ban on crypto trading... (-0.56)
+   > Bitcoin crashes below support levels... (0.40)
+   > Market fear rises as recession looms... (-0.77)
+
+🌐 MARKET MOOD: FEAR (Panic) (Score: -0.41)
+
+--- 🗳️ COUNCIL VOTING SESSION ---
+👤 The Trend Master: BUY (70)
+👤 The Structure Master: NEUTRAL (50)
+👤 The Volume Master: SELL (20)
+👤 The Indicator Master: SELL (25)
+👤 The Smart Money Master: NEUTRAL (50)
+👤 The Pattern Master: NEUTRAL (50)
+👤 The Geometry Master: NEUTRAL (50)
+--- ⚖️ FINAL VERDICT: NEUTRAL (Score: 46.75 | Threshold: 70) ---
+
+✅ TEST PASSED: Sentiment Engine integrated correctly.
+   Detected Mood: FEAR (Panic)

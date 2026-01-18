@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔱 SAT-V3 Dashboard</title>
+    <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0D0E12;
+            color: #E0E6ED;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: auto;
+        }
+
+        .top-section {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+
+        .card {
+            background: #1E222D;
+            border-radius: 10px;
+            padding: 0.75rem;
+            border: 1px solid #2A2E39;
+        }
+
+        .card:hover {
+            border-color: #667eea;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+
+        .coin-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .price {
+            font-size: 0.9rem;
+        }
+
+        .price-change {
+            font-size: 0.75rem;
+            margin-left: 0.2rem;
+        }
+
+        .score {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 0.3rem 0;
+        }
+
+        .score.bullish {
+            color: #26a69a;
+        }
+
+        .score.bearish {
+            color: #ef5350;
+        }
+
+        .score.neutral {
+            color: #ffa726;
+        }
+
+        .signal {
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .params {
+            font-size: 0.7rem;
+            margin: 0.3rem 0;
+        }
+
+        .param-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.2rem 0;
+        }
+
+        .council {
+            font-size: 0.6rem;
+            margin-top: 0.3rem;
+            padding-top: 0.3rem;
+            border-top: 1px solid #2A2E39;
+        }
+
+        .council-title {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            color: #9CA3AF;
+        }
+
+        .council-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.15rem;
+        }
+
+        .council-item {
+            padding: 0.1rem 0.2rem;
+            border-radius: 2px;
+            background: #2A2E39;
+            font-size: 0.55rem;
+        }
+
+        .mini-chart-container {
+            height: 50px;
+            margin-top: 0.3rem;
+            background: #151820;
+            border-radius: 3px;
+        }
+
+        .osc-container {
+            height: 30px;
+            margin-top: 0.2rem;
+            background: #151820;
+            border-radius: 3px;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.2rem;
+            margin-top: 0.3rem;
+        }
+
+        button {
+            padding: 0.4rem;
+            border: none;
+            border-radius: 3px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+
+        .buy-btn {
+            background: #26a69a;
+            color: #fff;
+        }
+
+        .buy-btn:hover {
+            background: #20897d;
+        }
+
+        .sell-btn {
+            background: #ef5350;
+            color: #fff;
+        }
+
+        .sell-btn:hover {
+            background: #e53935;
+        }
+
+        /* Right Panel */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .portfolio-card {
+            background: linear-gradient(135deg, #1a1f2e 0%, #252b3d 100%);
+            border: 1px solid #3a4050;
+        }
+
+        .portfolio-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .portfolio-equity {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #26a69a;
+            text-align: center;
+            margin: 0.5rem 0;
+        }
+
+        .portfolio-params {
+            font-size: 0.75rem;
+        }
+
+        .portfolio-param {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            border-bottom: 1px solid #2A2E39;
+        }
+
+        .portfolio-param:last-child {
+            border-bottom: none;
+        }
+
+        .profit {
+            color: #26a69a;
+        }
+
+        .loss {
+            color: #ef5350;
+        }
+
+        /* Transaction Card */
+        .tx-card {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .tx-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #ff9800;
+            margin-bottom: 0.5rem;
+        }
+
+        .tx-item {
+            display: grid;
+            grid-template-columns: 70px 1fr 80px;
+            gap: 0.3rem;
+            padding: 0.4rem;
+            background: #151820;
+            border-radius: 4px;
+            margin-bottom: 0.3rem;
+            font-size: 0.7rem;
+        }
+
+        .tx-symbol {
+            font-weight: 700;
+        }
+
+        .tx-details {
+            color: #9CA3AF;
+        }
+
+        .tx-pnl {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        /* AI Log Card */
+        .log-card {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .log-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #00bcd4;
+            margin-bottom: 0.5rem;
+        }
+
+        .log-item {
+            padding: 0.3rem 0.4rem;
+            background: #151820;
+            border-radius: 3px;
+            margin-bottom: 0.2rem;
+            font-size: 0.65rem;
+            font-family: monospace;
+        }
+
+        .log-time {
+            color: #667eea;
+            margin-right: 0.5rem;
+        }
+
+        .log-trade {
+            color: #26a69a;
+        }
+
+        .log-price {
+            color: #ffa726;
+        }
+
+        /* Chart Section */
+        .chart-section {
+            background: #1E222D;
+            border-radius: 10px;
+            padding: 0.75rem;
+            border: 1px solid #2A2E39;
+            margin-bottom: 0.75rem;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+
+        .chart-header h2 {
+            font-size: 0.9rem;
+            color: #9CA3AF;
+        }
+
+        .open-superchart-btn {
+            padding: 0.4rem 0.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .superchart-iframe {
+            width: 100%;
+            height: 450px;
+            border: none;
+            border-radius: 6px;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            text-align: center;
+            padding: 0.4rem;
+            background: #1E222D;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            color: #9CA3AF;
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #26a69a;
+            border-radius: 50%;
+            margin-right: 0.4rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="top-section">
+            <div class="cards-grid" id="cards"></div>
+            <div class="right-panel">
+                <!-- Portfolio Card -->
+                <div class="card portfolio-card">
+                    <div class="portfolio-title">💼 Portfolio</div>
+                    <div class="portfolio-equity" id="portfolio-equity">$100,000.00</div>
+                    <div class="portfolio-params">
+                        <div class="portfolio-param"><span>Cash:</span><strong id="cash">$100,000.00</strong></div>
+                        <div class="portfolio-param"><span>Equity:</span><strong id="equity">$100,000.00</strong></div>
+                        <div class="portfolio-param"><span>Realized PnL:</span><strong id="realized-pnl"
+                                class="profit">$0.00</strong></div>
+                        <div class="portfolio-param"><span>Unrealized PnL:</span><strong id="unrealized-pnl"
+                                class="profit">$0.00</strong></div>
+                        <div class="portfolio-param"><span>Max Drawdown:</span><strong id="max-drawdown"
+                                class="loss">0.00%</strong></div>
+                        <div class="portfolio-param"><span>Open Positions:</span><strong id="open-positions">0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction Details Card -->
+                <div class="card tx-card">
+                    <div class="tx-title">📊 Active Positions</div>
+                    <div id="positions-list">
+                        <div style="color:#9CA3AF;font-size:0.7rem;text-align:center;">No active positions</div>
+                    </div>
+                </div>
+
+                <!-- AI Bot Log Card -->
+                <div class="card log-card">
+                    <div class="log-title">🤖 AI Bot Log</div>
+                    <div id="log-list">
+                        <div class="log-item"><span class="log-time">--:--:--</span> Waiting for activity...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-header">
+                <h2>📈 Live Chart</h2>
+                <a href="/chart" class="open-superchart-btn" target="_blank">🚀 Open Superchart</a>
+            </div>
+            <iframe src="/chart" class="superchart-iframe" allowfullscreen></iframe>
+        </div>
+
+        <!-- Real-Time Price Log -->
+        <div class="card" style="margin-bottom:0.75rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                <div class="log-title" style="margin:0;">📡 Real-Time Price Feed (Binance Testnet)</div>
+                <div id="price-count" style="font-size:0.7rem;color:#9CA3AF;">0 updates</div>
+            </div>
+            <div id="price-log-list" style="max-height:120px;overflow-y:auto;font-family:monospace;">
+                <div class="log-item"><span class="log-time">--:--:--</span> Connecting to Binance Testnet...</div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <span class="live-indicator"></span>
+            <span id="status">Connecting...</span>
+        </div>
+    </div>
+
+    <script>
+        let ws;
+        const councilNames = ["Trend", "Structure", "Volume", "Smart Money", "Pattern", "Geometry", "Indicator"];
+        const miniCharts = {};
+        const oscCharts = {};
+        let previousCoins = [];
+
+        function createCard(coin, info) {
+            const score = info.council_score || 50;
+            const signal = info.signal || 'NEUTRAL';
+            const scoreClass = score >= 60 ? 'bullish' : score <= 40 ? 'bearish' : 'neutral';
+            const priceChange = info.price_change || 0;
+            const councilScores = councilNames.map(() => (Math.random() * 100).toFixed(2));
+
+            return `
+                <div class="card" data-coin="${coin}">
+                    <div class="card-header">
+                        <span class="coin-name">${coin}</span>
+                        <span class="price">$${info.price?.toFixed(2) || '0.00'}
+                            <span class="price-change" style="color:${priceChange >= 0 ? '#26a69a' : '#ef5350'}">
+                                ${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%
+                            </span>
+                        </span>
+                    </div>
+                    <div class="score ${scoreClass}">${score.toFixed(2)}</div>
+                    <div class="signal ${scoreClass}">${signal}</div>
+                    <div class="params">
+                        <div class="param-row"><span>RSI:</span><strong>${info.rsi?.toFixed(2) || '0.00'}</strong></div>
+                        <div class="param-row"><span>ATR:</span><strong>${info.atr?.toFixed(2) || '0.00'}</strong></div>
+                        <div class="param-row"><span>Sentiment:</span><strong style="color:${info.sentiment === 'HYPE' ? '#26a69a' : info.sentiment === 'FEAR' ? '#ef5350' : '#ffa726'}">${info.sentiment || 'NORMAL'}</strong></div>
+                    </div>
+                    <div class="council">
+                        <div class="council-title">⚔️ 7 Council</div>
+                        <div class="council-row">
+                            ${councilNames.map((name, i) => {
+                const s = parseFloat(councilScores[i]);
+                const emoji = s >= 60 ? '🟢' : s <= 40 ? '🔴' : '🟡';
+                return `<div class="council-item">${emoji} ${name}: ${councilScores[i]}</div>`;
+            }).join('')}
+                        </div>
+                    </div>
+                    <div class="mini-chart-container" id="mini-${coin}"></div>
+                    <div class="osc-container" id="osc-${coin}"></div>
+                    <div class="buttons">
+                        <button class="buy-btn" onclick="sendCommand('${info.symbol}','FORCE_BUY')">🟢 BUY</button>
+                        <button class="sell-btn" onclick="sendCommand('${info.symbol}','FORCE_SELL')">🔴 SELL</button>
+                    </div>
+                </div>`;
+        }
+
+        function initMiniCharts(coins) {
+            coins.forEach(coin => {
+                const miniContainer = document.getElementById(`mini-${coin}`);
+                if (miniContainer && !miniCharts[coin]) {
+                    try {
+                        const chart = LightweightCharts.createChart(miniContainer, {
+                            width: miniContainer.clientWidth || 150,
+                            height: 50,
+                            layout: { background: { color: '#151820' }, textColor: '#9CA3AF' },
+                            grid: { vertLines: { visible: false }, horzLines: { visible: false } },
+                            rightPriceScale: { visible: false },
+                            timeScale: { visible: false },
+                            crosshair: { mode: 0 }
+                        });
+                        const areaSeries = chart.addAreaSeries({
+                            topColor: 'rgba(102, 126, 234, 0.5)',
+                            bottomColor: 'rgba(102, 126, 234, 0.1)',
+                            lineColor: '#667eea',
+                            lineWidth: 1
+                        });
+                        miniCharts[coin] = { chart, series: areaSeries, data: [] };
+                    } catch (e) { console.error('Mini chart error:', e); }
+                }
+
+                const oscContainer = document.getElementById(`osc-${coin}`);
+                if (oscContainer && !oscCharts[coin]) {
+                    try {
+                        const oscChart = LightweightCharts.createChart(oscContainer, {
+                            width: oscContainer.clientWidth || 150,
+                            height: 30,
+                            layout: { background: { color: '#151820' }, textColor: '#9CA3AF' },
+                            grid: { vertLines: { visible: false }, horzLines: { visible: false } },
+                            rightPriceScale: { visible: false },
+                            timeScale: { visible: false },
+                            crosshair: { mode: 0 }
+                        });
+                        const lineSeries = oscChart.addLineSeries({ color: '#ff9800', lineWidth: 1 });
+                        oscCharts[coin] = { chart: oscChart, series: lineSeries, data: [] };
+                    } catch (e) { console.error('Osc chart error:', e); }
+                }
+            });
+        }
+
+        function updateMiniCharts(assets) {
+            const now = Math.floor(Date.now() / 1000);
+            Object.keys(assets).forEach(coin => {
+                const price = assets[coin].price || 0;
+                const score = assets[coin].council_score || 50;
+
+                if (miniCharts[coin]) {
+                    const mc = miniCharts[coin];
+                    mc.data.push({ time: now, value: price });
+                    if (mc.data.length > 60) mc.data.shift();
+                    try { mc.series.setData(mc.data); } catch (e) { }
+                }
+
+                if (oscCharts[coin]) {
+                    const oc = oscCharts[coin];
+                    oc.data.push({ time: now, value: score });
+                    if (oc.data.length > 60) oc.data.shift();
+                    try { oc.series.setData(oc.data); } catch (e) { }
+                }
+            });
+        }
+
+        function sendCommand(symbol, action) {
+            fetch(`/api/command/${symbol.replace('/', '-')}/${action}`, { method: 'POST' })
+                .then(r => r.json())
+                .then(d => {
+                    if (d.status === 'ok') {
+                        alert(`✅ ${d.message}`);
+                    } else {
+                        alert(`❌ ${d.message}`);
+                    }
+                })
+                .catch(e => alert(`❌ ${e.message}`));
+        }
+
+        function updateTransactions(transactions) {
+            const container = document.getElementById('positions-list');
+            if (!transactions || transactions.length === 0) {
+                container.innerHTML = '<div style="color:#9CA3AF;font-size:0.7rem;text-align:center;">No active positions</div>';
+                return;
+            }
+
+            container.innerHTML = transactions.map(tx => {
+                const pnl = tx.pnl || 0;
+                const pnlClass = pnl >= 0 ? 'profit' : 'loss';
+                const pnlStr = pnl >= 0 ? `+$${pnl.toFixed(2)}` : `-$${Math.abs(pnl).toFixed(2)}`;
+                const currentPrice = tx.current_price || tx.entry_price;
+                const priceColor = currentPrice >= tx.entry_price ? '#26a69a' : '#ef5350';
+
+                return `
+                    <div class="tx-item">
+                        <div class="tx-symbol">${tx.symbol.replace('/USDT', '')}</div>
+                        <div class="tx-details">
+                            ${tx.quantity.toFixed(6)} @ $${tx.entry_price.toFixed(2)}
+                            → <span style="color:${priceColor}">$${currentPrice.toFixed(2)}</span>
+                        </div>
+                        <div class="tx-pnl ${pnlClass}">${pnlStr}</div>
+                    </div>`;
+            }).join('');
+        }
+
+        function updateBotLogs(logs) {
+            const container = document.getElementById('log-list');
+            if (!logs || logs.length === 0) {
+                container.innerHTML = '<div class="log-item"><span class="log-time">--:--:--</span> Waiting for activity...</div>';
+                return;
+            }
+
+            container.innerHTML = logs.slice(-20).reverse().map(log => {
+                const time = log.timestamp ? log.timestamp.split(' ')[1] || log.timestamp : '--:--:--';
+                const typeClass = log.type === 'TRADE' ? 'log-trade' : 'log-price';
+                return `<div class="log-item"><span class="log-time">${time}</span> <span class="${typeClass}">${log.message}</span></div>`;
+            }).join('');
+        }
+
+        let priceUpdateCount = 0;
+
+        function updatePriceLogs(priceLogs) {
+            const container = document.getElementById('price-log-list');
+            if (!priceLogs || priceLogs.length === 0) {
+                return;
+            }
+
+            priceUpdateCount += priceLogs.length;
+            document.getElementById('price-count').textContent = `${priceUpdateCount} updates`;
+
+            // Add new logs at top
+            const newLogs = priceLogs.map(log => {
+                const isUp = log.message.includes('📈');
+                const color = isUp ? '#26a69a' : '#ef5350';
+                return `<div class="log-item"><span class="log-time">${log.timestamp}</span> <span style="color:${color}">${log.message}</span></div>`;
+            }).join('');
+
+            container.innerHTML = newLogs + container.innerHTML;
+
+            // Keep only last 50 items
+            const items = container.querySelectorAll('.log-item');
+            if (items.length > 50) {
+                for (let i = 50; i < items.length; i++) {
+                    items[i].remove();
+                }
+            }
+        }
+
+        function connectWebSocket() {
+            ws = new WebSocket(`ws://${window.location.host}/ws`);
+            ws.onopen = () => {
+                document.getElementById('status').textContent = 'Connected - Live Data';
+                document.querySelector('.live-indicator').style.background = '#26a69a';
+            };
+            ws.onmessage = (e) => {
+                const msg = JSON.parse(e.data);
+                if (msg.type === 'update' && msg.data) {
+                    updateDashboard(msg.data, msg.transactions, msg.bot_logs);
+                    updatePriceLogs(msg.price_logs);
+                }
+            };
+            ws.onerror = () => {
+                document.getElementById('status').textContent = 'Connection Error';
+                document.querySelector('.live-indicator').style.background = '#ef5350';
+                setTimeout(connectWebSocket, 5000);
+            };
+            ws.onclose = () => {
+                document.getElementById('status').textContent = 'Disconnected - Reconnecting...';
+                document.querySelector('.live-indicator').style.background = '#ffa726';
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
+
+        function updateDashboard(data, transactions, botLogs) {
+            const assets = data.assets || {};
+            const coins = Object.keys(assets).slice(0, 6);
+
+            // Only rebuild cards if coins changed
+            const coinsChanged = JSON.stringify(coins) !== JSON.stringify(previousCoins);
+            if (coinsChanged) {
+                document.getElementById('cards').innerHTML = coins.map(c => createCard(c, assets[c])).join('');
+                previousCoins = coins;
+                // Init charts after DOM update
+                setTimeout(() => initMiniCharts(coins), 50);
+            }
+
+            // Update mini charts with new data
+            updateMiniCharts(assets);
+
+            // Update portfolio
+            const portfolio = data.portfolio || {};
+            const equity = portfolio.equity || 100000;
+            const cash = portfolio.cash || 100000;
+            const realizedPnl = portfolio.realized_pnl || 0;
+            const holdings = portfolio.holdings || {};
+
+            // Calculate unrealized PnL
+            let unrealizedPnl = 0;
+            Object.values(holdings).forEach(h => {
+                unrealizedPnl += (h.current_value || 0) - (h.total_cost || 0);
+            });
+
+            const maxDrawdown = portfolio.max_drawdown || 0;
+            const openPositions = Object.keys(holdings).length;
+
+            document.getElementById('portfolio-equity').textContent = `$${equity.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('cash').textContent = `$${cash.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('equity').textContent = `$${equity.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+            const pnlEl = document.getElementById('realized-pnl');
+            pnlEl.textContent = `${realizedPnl >= 0 ? '+' : ''}$${Math.abs(realizedPnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            pnlEl.className = realizedPnl >= 0 ? 'profit' : 'loss';
+
+            const upnlEl = document.getElementById('unrealized-pnl');
+            upnlEl.textContent = `${unrealizedPnl >= 0 ? '+' : ''}$${Math.abs(unrealizedPnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            upnlEl.className = unrealizedPnl >= 0 ? 'profit' : 'loss';
+
+            document.getElementById('max-drawdown').textContent = `${maxDrawdown.toFixed(2)}%`;
+            document.getElementById('open-positions').textContent = openPositions;
+
+            // Update transactions and logs
+            updateTransactions(transactions);
+            updateBotLogs(botLogs);
+
+            document.getElementById('status').textContent = `Last Update: ${data.timestamp || new Date().toLocaleTimeString()}`;
+        }
+
+        window.addEventListener('load', () => {
+            connectWebSocket();
+        });
+    </script>
+</body>
+
+</html>

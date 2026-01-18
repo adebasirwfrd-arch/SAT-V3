@@ -1,0 +1,194 @@
+Sesi Praktikum 9: The Genesis Loop (Menghidupkan Mesin)Ini adalah langkah paling krusial. Kita akan menyatukan semua modul menjadi satu file eksekusi utama: main.py.File ini akan menjalankan "The Infinite Loop":Bangun $\rightarrow$ Baca Data $\rightarrow$ Dengar Berita $\rightarrow$ Rapat Dewan $\rightarrow$ Hitung Resiko $\rightarrow$ Eksekusi $\rightarrow$ Tidur $\rightarrow$ Ulangi.Karena kita berada di lingkungan Antigravity (yang mungkin memblokir koneksi Binance), saya telah merancang main.py ini dengan "Simulation Protocol". Jika koneksi Binance gagal, dia akan otomatis beralih menggunakan data dummy agar Anda tetap bisa melihat bot "hidup" dan berpikir.
+ROLE: AI Software Engineer (System Integrator)
+LOCATION: /Users/izzadev/.gemini/antigravity/scratch/SAT-V3
+
+TASK OBJECTIVE:
+Membuat `src/main.py` sebagai jantung utama aplikasi. Script ini akan mengimpor seluruh modul yang telah dibuat dan menjalankannya dalam siklus (Loop) terus menerus.
+
+INSTRUCTIONS:
+
+1.  **Create Main Execution Engine**:
+    Buat file `/src/main.py`.
+    
+    Logic Flow:
+    1.  **Inisialisasi**: Load Memory, Siapkan API Binance.
+    2.  **Looping**:
+        - Ambil data candle terbaru (Coba Live Binance -> Jika gagal, pakai Mock Data).
+        - Panggil `SentimentMaster` untuk cek mood pasar.
+        - Panggil `TheChairman` untuk voting teknikal.
+        - Panggil `RiskManager` untuk hitung lot size.
+        - Keputusan: BUY / SELL / HOLD.
+        - Update `StateManager` (Simpan ke memory.json).
+        - Update Dashboard (Otomatis via memory.json).
+        - Sleep (Istirahat).
+
+    ```python
+    import time
+    import pandas as pd
+    import numpy as np
+    from datetime import datetime
+    import ccxt
+    import os
+    import sys
+    
+    # Setup Path
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+    from src.council.chairman import TheChairman
+    from src.utils.risk_manager import RiskManager
+    from src.utils.state_manager import StateManager
+    from config.settings import Config
+
+    class SATV3_Engine:
+        def __init__(self):
+            print("🚀 INITIALIZING SAT-V3 GOD TIER SYSTEM...")
+            self.brain = StateManager()
+            self.chairman = TheChairman() # Sudah termasuk SentimentMaster
+            self.risk_manager = RiskManager()
+            
+            # Setup Exchange
+            try:
+                self.exchange = ccxt.binance({
+                    'apiKey': Config.API_KEY,
+                    'secret': Config.SECRET_KEY,
+                    'options': {'defaultType': 'spot'}
+                })
+                if Config.SANDBOX:
+                    self.exchange.set_sandbox_mode(True)
+                print("✅ Connected to Binance Network")
+            except Exception as e:
+                print(f"⚠️ Binance Connection Failed: {e}")
+                self.exchange = None
+
+        def get_market_data(self):
+            """Mencoba ambil data real, fallback ke dummy jika offline"""
+            try:
+                if self.exchange:
+                    # Ambil 500 candle terakhir
+                    ohlcv = self.exchange.fetch_ohlcv(Config.SYMBOL, timeframe='1h', limit=500)
+                    df = pd.DataFrame(ohlcv, columns=['time', 'open', 'high', 'low', 'close', 'volume'])
+                    df['time'] = pd.to_datetime(df['time'], unit='ms')
+                    return df
+            except Exception as e:
+                print(f"⚠️ Data Feed Error: {e}")
+            
+            # --- SIMULATION MODE (FALLBACK) ---
+            # Jika koneksi gagal (karena di IDE/Antigravity), buat data dummy dinamis
+            # Agar bot tetap terlihat "hidup"
+            print("🔄 SWITCHING TO SIMULATION DATA FEED...")
+            dates = pd.date_range(end=datetime.now(), periods=500, freq='1h')
+            df = pd.DataFrame({'time': dates})
+            
+            # Buat pola Random Walk
+            base_price = 50000
+            noise = np.random.normal(0, 100, 500).cumsum()
+            df['close'] = base_price + noise
+            df['open'] = df['close'].shift(1).fillna(base_price)
+            df['high'] = df[['open', 'close']].max(axis=1) + 50
+            df['low'] = df[['open', 'close']].min(axis=1) - 50
+            df['volume'] = np.random.randint(100, 1000, 500)
+            
+            # Inject indicator extensions
+            import pandas_ta as ta
+            df.ta.strategies = ta.CommonStrategy
+            
+            return df
+
+        def run_cycle(self):
+            print(f"\n⏰ CYCLE START: {datetime.now().strftime('%H:%M:%S')}")
+            
+            # 1. Get Data
+            df = self.get_market_data()
+            if df is None or len(df) < 200:
+                print("❌ Not enough data. Sleeping.")
+                return
+
+            current_price = df['close'].iloc[-1]
+            print(f"💲 Current Price ({Config.SYMBOL}): ${current_price:.2f}")
+
+            # 2. The Council Deliberation (Termasuk Sentiment)
+            # Analisa dilakukan pada dataframe
+            verdict = self.chairman.solicit_votes(df)
+            
+            final_score = verdict['final_score']
+            signal = verdict['final_signal']
+            
+            # 3. Decision Execution
+            current_state = self.brain.state['status']
+            
+            if current_state == "IDLE":
+                if "BUY" in signal:
+                    # Hitung Risk
+                    atr = self.risk_manager.calculate_atr(df)
+                    plan = self.risk_manager.calculate_entry_params(10000, current_price, atr)
+                    
+                    print(f"⚡ EXECUTION: BUY SIGNAL DETECTED!")
+                    print(f"   Qty: {plan['quantity']:.4f} | SL: {plan['stop_loss']:.2f} | TP: {plan['take_profit']:.2f}")
+                    
+                    # Simpan ke Memory (Simulasi Fill)
+                    trade_data = {
+                        'symbol': Config.SYMBOL,
+                        'entry_price': current_price,
+                        'quantity': plan['quantity'],
+                        'stop_loss': plan['stop_loss'],
+                        'take_profit': plan['take_profit'],
+                        'order_id': f"SIM-{int(time.time())}"
+                    }
+                    self.brain.update_position(trade_data)
+                    
+                else:
+                    print("💤 Waiting for setup...")
+            
+            elif current_state == "IN_POSITION":
+                # Logic sederhana untuk menutup posisi (Simulasi)
+                # Di real life, ini ditangani oleh OCO Order di Binance / Trailing Stop logic
+                pos = self.brain.state['current_position']
+                entry_price = pos['entry_price']
+                
+                # Cek TP/SL hit (Simulasi sederhana)
+                pnl = (current_price - entry_price) * pos['quantity']
+                print(f"💎 POSITION OPEN. Unrealized PnL: ${pnl:.2f}")
+                
+                # Jika sinyal berubah jadi STRONG SELL, force close (Panic Sell)
+                if signal == "STRONG SELL":
+                    print("🚨 SIGNAL REVERSAL! FORCE CLOSING...")
+                    self.brain.close_position(pnl=pnl)
+                
+                # Update Dashboard Log (Refresh timestamp)
+                self.brain.save_state()
+
+    # --- MAIN ENTRY POINT ---
+    if __name__ == "__main__":
+        bot = SATV3_Engine()
+        
+        # Jalankan 3 Cycle saja untuk Tes Praktikum
+        # Di production, ini adalah while True:
+        try:
+            for i in range(3): 
+                bot.run_cycle()
+                time.sleep(2) # Sleep 2 detik antar cycle untuk demo
+                print("-" * 50)
+            print("\n✅ MAIN ENGINE TEST COMPLETE.")
+        except KeyboardInterrupt:
+            print("🛑 SHUTDOWN.")
+    ```
+
+2.  **Run Integration Test**:
+    Perintah ini akan menjalankan `src/main.py`.
+    Karena kita set loop hanya 3 kali, script akan berhenti otomatis dan memberikan laporan.
+    
+    Tujuan:
+    - Memastikan `SATV3_Engine` bisa memanggil `TheChairman`.
+    - Memastikan fallback data (Simulation Mode) berjalan jika internet offline.
+    - Memastikan `memory.json` terupdate setiap siklus.
+
+EXECUTION COMMANDS:
+`python src/main.py`
+
+OUTPUT EXPECTATION:
+Saya ingin melihat log:
+1. "INITIALIZING SAT-V3..."
+2. "CYCLE START..."
+3. "COUNCIL VOTING SESSION..."
+4. "EXECUTION: BUY SIGNAL" atau "Waiting for setup" (Tergantung random data).
+5. "MAIN ENGINE TEST COMPLETE."

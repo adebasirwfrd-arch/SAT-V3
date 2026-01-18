@@ -1,0 +1,8 @@
+✅ chmod complete
+
+Files Created:
+- src/main.py (Production Engine)
+- run_mac_local.sh (MacOS Launcher)
+
+Permissions:
+-rwxr-xr-x@ 1 izzadev  staff  639 Jan 16 02:36 run_mac_local.sh

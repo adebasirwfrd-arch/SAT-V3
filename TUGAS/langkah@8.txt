@@ -1,0 +1,226 @@
+Sesi Praktikum 8: The Intel (Mata-Mata Berita)
+Sekarang saatnya kita memanggil Divisi 2. Kita akan membangun The Sentiment Master. Sesuai Blueprint, kita akan menggunakan NLP (Natural Language Processing) ringan seperti VADER  agar bisa berjalan cepat di laptop lokal Anda tanpa membebani RAM.
+
+Tugas dia sederhana: Mengubah teks berita menjadi Angka (-1 s/d +1).
+
+Jika skor > 0.5: Mode HYPE (Sniper jadi galak).
+
+Jika skor < -0.5: Mode FEAR (Sniper tiarap).
+ROLE: AI Software Engineer (NLP Specialist)
+LOCATION: /Users/izzadev/.gemini/antigravity/scratch/SAT-V3
+
+TASK OBJECTIVE:
+Membangun "The Sentiment Master" (Divisi 2) menggunakan library VADER. Modul ini akan mensimulasikan pembacaan berita utama (Headline) dan memberikan skor sentimen pasar.
+
+INSTRUCTIONS:
+
+1.  **Install Library NLP**:
+    Update `requirements.txt` dengan menambahkan:
+    ```text
+    vaderSentiment
+    feedparser
+    ```
+    (Kita butuh `vaderSentiment` untuk otak NLP dan `feedparser` untuk membaca RSS berita crypto nanti).
+
+2.  **Implement Sentiment Master**:
+    Buat file `/src/council/sentiment_master.py`.
+    
+    Fitur:
+    - Menggunakan `SentimentIntensityAnalyzer` dari VADER.
+    - Fungsi `analyze_headlines(headlines)`: Menerima list judul berita, mengembalikan rata-rata skor.
+    - Fungsi `fetch_crypto_news()`: (Versi Mockup/Simulasi dulu) Mengembalikan headline palsu untuk tes.
+    
+    ```python
+    from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+    import random
+
+    class SentimentMaster:
+        def __init__(self):
+            self.analyzer = SentimentIntensityAnalyzer()
+            # Threshold untuk HYPE Mode sesuai Blueprint
+            self.hype_threshold = 0.5 
+
+        def get_mock_news(self):
+            """
+            Simulasi mengambil berita terkini.
+            Nanti bisa diganti dengan real RSS Feed dari Coindesk/Cointelegraph.
+            """
+            scenarios = [
+                # Skenario Bullish
+                [
+                    "Bitcoin breaks $100k barrier as institutions rush in",
+                    "SEC approves new Crypto ETF, market soars",
+                    "Michael Saylor buys more Bitcoin",
+                    "Inflation drops, Fed hints at rate cuts"
+                ],
+                # Skenario Bearish
+                [
+                    "Exchange hacked, thousands of Bitcoin stolen",
+                    "Government announces strict ban on crypto trading",
+                    "Bitcoin crashes below support levels",
+                    "Market fear rises as recession looms"
+                ],
+                # Skenario Netral/Mixed
+                [
+                    "Bitcoin consolidates around $50k",
+                    "Top 10 altcoins to watch this week",
+                    "Crypto market shows mixed signals",
+                    "Analyst predicts sideways movement"
+                ]
+            ]
+            return random.choice(scenarios)
+
+        def analyze(self, headlines=None):
+            """
+            Input: List of strings (headlines). Jika None, pakai data mock.
+            Output: Dict {score, signal, mode}
+            """
+            if not headlines:
+                headlines = self.get_mock_news()
+
+            total_score = 0
+            details = []
+            
+            print(f"\n📰 ANALYZING {len(headlines)} HEADLINES:")
+            
+            for news in headlines:
+                # VADER menghasilkan compound score (-1 s/d 1)
+                vs = self.analyzer.polarity_scores(news)
+                score = vs['compound']
+                total_score += score
+                details.append(f"   Score {score:.2f}: {news[:50]}...")
+                print(f"   > {news[:50]}... ({score:.2f})")
+
+            # Rata-rata sentimen
+            avg_score = total_score / len(headlines) if headlines else 0
+            
+            # Tentukan Mode sesuai Blueprint
+            mode = "NORMAL"
+            if avg_score >= 0.2: # Agak longgar dikit untuk demo
+                mode = "HYPE (Greed)"
+            elif avg_score <= -0.2:
+                mode = "FEAR (Panic)"
+            
+            return {
+                'average_score': avg_score,
+                'mode': mode,
+                'headlines': headlines,
+                'details': details
+            }
+    ```
+
+3.  **Update The Chairman (Integrasi Divisi 2)**:
+    Kita harus memberitahu "Ketua Dewan" (Chairman) bahwa ada divisi baru.
+    Edit `/src/council/chairman.py`.
+    
+    - Import `SentimentMaster`.
+    - Tambahkan logic: Jika Sentimen = HYPE, kurangi syarat voting.
+    
+    Modifikasi method `solicit_votes` di `chairman.py`:
+    ```python
+    # ... imports existing ...
+    from .sentiment_master import SentimentMaster  # <-- New Import
+
+    class TheChairman:
+        def __init__(self):
+            # ... existing generals ...
+            self.sentiment_bot = SentimentMaster() # <-- Add Sentiment Bot
+
+        def solicit_votes(self, df: pd.DataFrame) -> dict:
+            # 1. Cek Sentimen Dulu (Divisi 2)
+            sentiment_result = self.sentiment_bot.analyze()
+            market_mood = sentiment_result['mode']
+            sentiment_score = sentiment_result['average_score']
+            
+            print(f"\n🌐 MARKET MOOD: {market_mood} (Score: {sentiment_score:.2f})")
+            
+            # 2. Tentukan Ambang Batas (Threshold) berdasarkan Blueprint
+            # Normal: > 70 untuk BUY
+            # Hype: > 50 untuk BUY (Lebih Agresif)
+            buy_threshold = 70
+            if "HYPE" in market_mood:
+                buy_threshold = 50
+                print("⚠️ HYPE DETECTED: Lowering Buy Threshold to 50 (Aggressive Mode)")
+
+            # 3. Lakukan Voting 7 Jenderal (Divisi 1)
+            total_score = 0
+            total_weight = 0
+            details = {}
+            
+            # ... (Looping generals sama seperti sebelumnya) ...
+            # ... (Copy paste loop yang lama disini) ...
+            
+            print("\n--- 🗳️ COUNCIL VOTING SESSION ---")
+            for general in self.generals:
+                vote = general.analyze(df)
+                weighted_s = vote['score'] * general.weight
+                total_score += weighted_s
+                total_weight += general.weight
+                details[general.name] = vote
+                print(f"👤 {general.name}: {vote['signal']} ({vote['score']})")
+
+            final_score = total_score / total_weight if total_weight > 0 else 50
+            
+            # 4. Final Verdict dengan Threshold Dinamis
+            final_signal = "NEUTRAL"
+            
+            if final_score >= buy_threshold:
+                final_signal = "STRONG BUY" if final_score >= 80 else "BUY"
+            elif final_score <= 30: 
+                final_signal = "STRONG SELL"
+            elif final_score <= 40: 
+                final_signal = "SELL"
+            
+            print(f"--- ⚖️ FINAL VERDICT: {final_signal} (Score: {final_score:.2f} | Threshold: {buy_threshold}) ---\n")
+            
+            return {
+                'final_score': final_score,
+                'final_signal': final_signal,
+                'sentiment': sentiment_result, # Sertakan data sentimen di report
+                'details': details
+            }
+    ```
+
+4.  **Test Script (News Simulation)**:
+    Update `test_council.py` untuk menguji integrasi Sentimen + Teknikal.
+    
+    ```python
+    import pandas as pd
+    import numpy as np
+    from src.council.chairman import TheChairman
+
+    def run_test():
+        print("🧪 Generating Dummy Market Data...")
+        dates = pd.date_range(start='2024-01-01', periods=300, freq='1h')
+        df = pd.DataFrame({'time': dates})
+        # Data Netral/Sideways
+        df['close'] = np.linspace(100, 110, 300) + np.random.normal(0, 2, 300)
+        df['open'] = df['close'] - 1
+        df['high'] = df['close'] + 2
+        df['low'] = df['close'] - 2
+        df['volume'] = 1000
+
+        chairman = TheChairman()
+        
+        # Test: Kita jalankan voting. 
+        # Karena SentimentMaster menggunakan random mock news, 
+        # perhatikan output console apakah "HYPE DETECTED" muncul atau tidak.
+        
+        result = chairman.solicit_votes(df)
+        
+        if 'sentiment' in result:
+            print(f"✅ TEST PASSED: Sentiment Engine integrated correctly.")
+            print(f"   Detected Mood: {result['sentiment']['mode']}")
+        else:
+            print("❌ TEST FAILED: Sentiment data missing.")
+
+    if __name__ == "__main__":
+        run_test()
+    ```
+
+EXECUTION COMMANDS:
+1. `pip install -r requirements.txt` (Install vaderSentiment).
+2. `python test_council.py`
+
+OUTPUT EXPECTATION:
+Saya ingin melihat log "MARKET MOOD" di awal voting, dan indikasi apakah Threshold turun karena HYPE atau tetap NORMAL.

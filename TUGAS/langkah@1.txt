@@ -1,0 +1,114 @@
+Mari kita mulai Sesi Praktikum 1.
+
+Tujuan: Membangun Pondasi Infrastruktur (The Base). Kita tidak bisa membangun gedung pencakar langit di atas tanah lumpur. Kita perlu menyiapkan Environment Python, Struktur Folder yang rapi, dan koneksi dasar ke Binance.
+
+Silakan buat file langkah01.txt di folder /TUGAS Anda, dan isi dengan konten berikut ini.
+ROLE: AI Software Engineer (Trading Systems Specialist)
+LOCATION: /Users/izzadev/.gemini/antigravity/scratch/SAT-V3
+
+TASK OBJECTIVE:
+Inisialisasi project environment untuk sistem trading "SAT-V3" (The Magnificent 7). Kita harus menyiapkan struktur direktori, virtual environment, dan dependensi dasar.
+
+INSTRUCTIONS:
+
+1.  **Directory Setup**:
+    Pastikan kita berada di root project: `/Users/izzadev/.gemini/antigravity/scratch/SAT-V3`.
+    Buat struktur folder berikut jika belum ada:
+    - /logs         (Untuk menyimpan log aktivitas bot)
+    - /data         (Untuk database SQLite/JSON)
+    - /src          (Source code utama)
+    - /src/council  (Tempat logika 7 Jenderal)
+    - /src/utils    (Utility functions)
+    - /config       (Konfigurasi)
+
+2.  **Environment Setup**:
+    - Buat virtual environment Python baru bernama `venv`.
+    - Buat file `requirements.txt` dengan library berikut (versi stabil):
+      ccxt
+      pandas
+      pandas_ta
+      numpy
+      streamlit
+      python-dotenv
+      ta-lib
+      plotly
+      watchdog
+    - Buat file `.env.example` berisi:
+      BINANCE_API_KEY=your_api_key_here
+      BINANCE_SECRET_KEY=your_secret_key_here
+      TRADING_MODE=TESTNET
+
+3.  **Configuration Skeleton**:
+    Buat file `/config/settings.py`. Isi dengan code dasar:
+    ```python
+    import os
+    from dotenv import load_dotenv
+
+    # Load environment variables
+    load_dotenv()
+
+    class Config:
+        PROJECT_NAME = "SAT-V3 Magnificent 7"
+        VERSION = "1.0.0"
+        
+        # Trading Settings
+        SYMBOL = 'BTC/USDT'  # Default pair
+        TIMEFRAME = '1h'     # Default timeframe
+        
+        # Path Settings
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        DATA_DIR = os.path.join(BASE_DIR, 'data')
+        LOG_DIR = os.path.join(BASE_DIR, 'logs')
+        
+        # Binance Config
+        API_KEY = os.getenv("BINANCE_API_KEY")
+        SECRET_KEY = os.getenv("BINANCE_SECRET_KEY")
+        SANDBOX = True # Default to Testnet/Sandbox
+    ```
+
+4.  **Connection Test Script**:
+    Buat file `check_system.py` di root directory untuk memverifikasi instalasi dan koneksi internet (tanpa perlu API key dulu).
+    Code:
+    ```python
+    import ccxt
+    import pandas as pd
+    import sys
+    import os
+
+    def check_setup():
+        print(f"✅ Python Version: {sys.version.split()[0]}")
+        
+        try:
+            import pandas_ta
+            print(f"✅ Pandas TA Version: {pandas_ta.version}")
+        except ImportError:
+            print("❌ Pandas TA not installed")
+
+        try:
+            exchange = ccxt.binance()
+            # Fetch public ticker to test connection without keys
+            ticker = exchange.fetch_ticker('BTC/USDT')
+            print(f"✅ Binance Connection (Public): SUCCESS")
+            print(f"   BTC Price: {ticker['last']} USDT")
+        except Exception as e:
+            print(f"❌ Binance Connection Failed: {str(e)}")
+
+        # Check directories
+        dirs = ['logs', 'data', 'src', 'config']
+        all_dirs_exist = all(os.path.exists(d) for d in dirs)
+        if all_dirs_exist:
+            print("✅ Directory Structure: VERIFIED")
+        else:
+            print("❌ Directory Structure: INCOMPLETE")
+
+    if __name__ == "__main__":
+        check_setup()
+    ```
+
+EXECUTION COMMANDS:
+Jalankan perintah shell untuk membuat folder, membuat venv, dan menginstall requirements (pip install -r requirements.txt).
+Catatan: Jika instalasi `ta-lib` gagal (sering terjadi di Mac M1/M2/M3), berikan instruksi manual kepada user untuk menginstallnya via Homebrew (`brew install ta-lib`), lalu coba pip install lagi.
+
+OUTPUT EXPECTATION:
+Setelah selesai, jalankan `python check_system.py` dan simpan outputnya ke dalam file report.
+

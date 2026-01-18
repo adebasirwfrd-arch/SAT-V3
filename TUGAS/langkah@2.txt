@@ -1,0 +1,179 @@
+Mari kita update Langkah 02 untuk mencakup:
+
+Inject API Key & Konfigurasi Data: Memasukkan kredensial dan path CSV ke sistem.
+
+Patching Library: Memperbaiki masalah pandas_ta.
+
+Membangun Jenderal Pertama: The Trend Master.
+
+Silakan buat file langkah02.txt dengan isi berikut.
+ROLE: AI Software Engineer (Trading Systems Architect)
+LOCATION: /Users/izzadev/.gemini/antigravity/scratch/SAT-V3
+
+TASK OBJECTIVE:
+1. Mengamankan API Key Testnet ke dalam environment variable.
+2. Mengatur path data historis BTC.
+3. Memperbaiki instalasi library `pandas_ta`.
+4. Membangun logika "The Trend Master" (Jenderal 1).
+
+INSTRUCTIONS:
+
+1.  **Secure Configuration (.env)**:
+    Buat file `.env` (atau timpa jika sudah ada) dengan kredensial berikut:
+    ```ini
+    BINANCE_API_KEY=waGMj7UqCZcKPZcTRt2KbveyVN41HN6LTbFhwDM3EVBPJ4w1ST9SEJR
+    BINANCE_SECRET_KEY=XG14B9T76ULBDoLszU4mqRIzlP4zqv8zR5RDPL8nzOXNT46g39LX
+    TRADING_MODE=TESTNET
+    ```
+
+2.  **Update Settings**:
+    Edit `/config/settings.py`. Tambahkan variabel untuk lokasi data CSV:
+    ```python
+    # ... existing imports ...
+    
+    class Config:
+        # ... existing config ...
+        
+        # Data Paths
+        HISTORICAL_DATA_PATH = '/Users/izzadev/.gemini/antigravity/scratch/SAT-V3/data/BTCUSDT-1m-2017-08-to-2023-03 (Binance SPOT).csv'
+    ```
+
+3.  **Dependency Fix**:
+    Update file `requirements.txt`. Ganti baris `pandas_ta` menjadi:
+    ```text
+    git+[https://github.com/twopirllc/pandas-ta.git@development](https://github.com/twopirllc/pandas-ta.git@development)
+    ```
+
+4.  **Create Base Class**:
+    Buat file `/src/council/base_general.py`:
+    ```python
+    from abc import ABC, abstractmethod
+    import pandas as pd
+
+    class BaseGeneral(ABC):
+        def __init__(self, name, weight):
+            self.name = name
+            self.weight = weight 
+
+        @abstractmethod
+        def analyze(self, df: pd.DataFrame) -> dict:
+            pass
+    ```
+
+5.  **Implement General 1: The Trend Master**:
+    Buat file `/src/council/trend_master.py`:
+    ```python
+    from .base_general import BaseGeneral
+    import pandas_ta as ta
+
+    class TrendMaster(BaseGeneral):
+        def __init__(self):
+            super().__init__("The Trend Master", weight=0.20)
+
+        def analyze(self, df):
+            if len(df) < 200:
+                return {'score': 50, 'signal': 'NEUTRAL', 'reason': 'Not enough data'}
+
+            # Indicators
+            df['EMA_200'] = df.ta.ema(length=200)
+            ichimoku = df.ta.ichimoku()
+            
+            if ichimoku is None:
+                 return {'score': 50, 'signal': 'NEUTRAL', 'reason': 'Ichimoku Failed'}
+            
+            ichi_df = ichimoku[0]
+            span_a = ichi_df[ichi_df.columns[0]]
+            span_b = ichi_df[ichi_df.columns[1]]
+            tenkan = ichi_df[ichi_df.columns[2]]
+            kijun  = ichi_df[ichi_df.columns[3]]
+            
+            last_close = df['close'].iloc[-1]
+            last_ema = df['EMA_200'].iloc[-1]
+            last_span_a = span_a.iloc[-1]
+            last_span_b = span_b.iloc[-1]
+
+            score = 0
+            reasons = []
+
+            # 1. EMA 200 (40 pts)
+            if last_close > last_ema:
+                score += 40
+                reasons.append("Above EMA200")
+            else:
+                reasons.append("Below EMA200")
+
+            # 2. Cloud (30 pts)
+            if last_close > last_span_a and last_close > last_span_b:
+                score += 30
+                reasons.append("Above Cloud")
+            elif last_close < last_span_a and last_close < last_span_b:
+                reasons.append("Below Cloud")
+            else:
+                score += 15
+                reasons.append("Inside Cloud")
+
+            # 3. TK Cross (30 pts)
+            if tenkan.iloc[-1] > kijun.iloc[-1]:
+                score += 30
+                reasons.append("TK Golden Cross")
+            elif tenkan.iloc[-1] < kijun.iloc[-1]:
+                reasons.append("TK Death Cross")
+            else:
+                score += 15
+
+            # Decision
+            signal = "NEUTRAL"
+            if score >= 70: signal = "BUY"
+            elif score <= 30: signal = "SELL"
+            
+            return {'score': score, 'signal': signal, 'reason': ", ".join(reasons)}
+    ```
+
+6.  **Test Script**:
+    Buat `test_council.py` di root untuk menguji logika (menggunakan dummy data dulu untuk memastikan instalasi library sukses):
+    ```python
+    import pandas as pd
+    import numpy as np
+    from src.council.trend_master import TrendMaster
+    from config.settings import Config
+    import os
+
+    def run_test():
+        print(f"📂 Checking Data Path Config: {Config.HISTORICAL_DATA_PATH}")
+        if os.path.exists(Config.HISTORICAL_DATA_PATH):
+            print("✅ Historical Data File FOUND.")
+        else:
+            print("⚠️ Historical Data File NOT FOUND (Normal if file not yet uploaded).")
+
+        print("\n🧪 Generating Dummy Market Data for Logic Test...")
+        dates = pd.date_range(start='2024-01-01', periods=300, freq='1h')
+        df = pd.DataFrame({'time': dates})
+        df['close'] = np.linspace(50000, 60000, 300) 
+        df['high'] = df['close'] + 100
+        df['low'] = df['close'] - 100
+        df['open'] = df['close'] - 50
+        df['volume'] = 1000
+
+        general = TrendMaster()
+        print(f"👮‍♂️ Summoning {general.name}...")
+
+        try:
+            result = general.analyze(df)
+            print(f"📊 Score: {result['score']} | Signal: {result['signal']}")
+            if result['score'] > 50:
+                print("✅ TEST PASSED: Logic detected Bullish trend.")
+            else:
+                print("❌ TEST FAILED: Logic error.")
+        except Exception as e:
+            print(f"❌ ERROR: {str(e)}")
+
+    if __name__ == "__main__":
+        run_test()
+    ```
+
+EXECUTION COMMANDS:
+1. `pip install -r requirements.txt` (Force update pandas_ta).
+2. `python test_council.py`
+
+OUTPUT EXPECTATION:
+Jalankan dan simpan outputnya. Saya ingin melihat konfirmasi bahwa file data ditemukan (atau path terbaca benar) dan tes logika TrendMaster lulus.

@@ -1,0 +1,157 @@
+Anda benar, Pak Ade. Implementasi sebelumnya adalah "MVP" (Minimum Viable Product). Untuk mencapai level kloning 100% TradingView (terutama fitur Advanced seperti TPO, 21 tipe chart, dan ratusan tools), kita tidak bisa meminta AI melakukan semuanya dalam satu kali "generate". Itu akan menyebabkan token limit atau penyederhanaan logika.
+
+Kita harus mengubah strategi menjadi Pembangunan Modular. Kita harus memerintahkan Antigravity untuk membangun Engine-nya terlebih dahulu, lalu mengisi "database" fitur-nya secara bertahap.
+
+Berikut adalah Analisis Mendalam dan Instruksi Step-by-Step (Batch 1: Core Engine & Chart Types) untuk diberikan ke Antigravity.
+
+Strategi Eksekusi (Batch 1 of 3)
+Fokus saat ini adalah membenahi Fondasi Rendering agar mampu menangani 21 tipe chart (termasuk yang non-linear seperti Kagi/Renko) dan mempersiapkan arsitektur untuk Advanced Volume.
+
+Silakan berikan Prompt 1 di bawah ini ke Antigravity.
+
+📝 Prompt 1: Refactoring Core Engine & Implementasi 21 Tipe Chart
+Tujuan: Mengubah CandleSeries sederhana menjadi sistem ChartFactory yang mendukung 21 tipe visualisasi, termasuk tipe non-time-based.
+
+Markdown
+
+**ROLE:** Lead Graphics Engineer & Quantitative Developer.
+**PROJECT:** SAT-V3 TradingView Clone (Upgrade Phase 1).
+**CONTEXT:** The previous implementation was too basic. We need to support the full suite of TradingView chart types (21 types) and prepare the architecture for advanced volume analysis.
+
+**TASK 1: REFACTOR RENDER ENGINE (The Factory Pattern)**
+Instead of a single `CandleSeries` component, refactor the code to use a `ChartRendererFactory`.
+1.  Create an interface `IChartRenderer` with a method `render(ctx, data, scale)`.
+2.  The engine must support switching between "Time-Based" (Standard) and "Price-Based" (Exotic) indexing.
+    * *Note:* Price-based charts (Renko, Kagi) disconnect time from the X-axis. You must create a "Virtual Index" for the X-axis mapping.
+
+**TASK 2: IMPLEMENT THE 14 STANDARD CHART TYPES**
+Implement specific rendering logic for these standard types (use Ocean Calm colors):
+1.  **Bars:** Traditional HLC bars.
+2.  **Candles:** Solid body (standard).
+3.  **Hollow Candles:** Outline only when bullish, filled when bearish.
+4.  **Column:** Volume-style bars for price.
+5.  **Line:** Simple closing price line (Bezier curve optional).
+6.  **Area:** Line with gradient fill (Teal to Transparent) below.
+7.  **Baseline:** A line chart that fills Red below a median line and Green above it.
+8.  **High-Low:** Area chart filling the space between High and Low (ignoring Open/Close).
+9.  **Heikin Ashi:** *CRITICAL:* Do not just draw candles. Recalculate OHLC using the HA formula:
+    * `HA_Close = (O+H+L+C)/4`
+    * `HA_Open = (Prev_HA_Open + Prev_HA_Close)/2`
+
+**TASK 3: IMPLEMENT THE 7 EXOTIC (PRICE-ACTION) TYPES**
+These are the hardest. You must process the raw tick/OHLC data into a new dataset before rendering:
+1.  **Renko:** Aggregate data into "Bricks". Only draw if `price_change >= brick_size`. Ignore time gaps.
+2.  **Line Break:** Draw a new bar only if the close exceeds the High/Low of the previous *n* lines (usually 3).
+3.  **Kagi:** Draw "Yang" (Thick/Teal) lines when price breaks previous high, "Yin" (Thin/Red) when breaks low. Vertical connection lines are required.
+4.  **Point & Figure (PnF):** Render columns of 'X' (Up) and 'O' (Down). Logic: Box Size + Reversal Amount.
+5.  **Range Bars:** Each bar must have exactly the same price range (High - Low = Constant). Time is irrelevant.
+
+**TASK 4: DATA STRUCTURE FOR ADVANCED VOLUME**
+Prepare the data interface to support Phase 2 (Volume Profile):
+Modify the `CandleData` interface to include an optional `tickVolumeProfile` property:
+```typescript
+interface TickVolume {
+  priceLevel: number;
+  buyVolume: number;
+  sellVolume: number;
+}
+// Each candle holds an array of volume at price
+OUTPUT REQUIREMENT:
+
+Provide the full logic for the DataTransformer that converts raw OHLC into Renko/Kagi/PnF structures.
+
+Update the UI Toolbar to select these 21 types.
+
+
+---
+
+### Strategi Eksekusi (Batch 2 of 3)
+Setelah Antigravity selesai dengan grafik (visual), kita masuk ke **Matematika & Indikator**. Tantangannya adalah performa. Merender 400 indikator tanpa lag membutuhkan *WebWorker*.
+
+Berikan **Prompt 2** ini setelah Prompt 1 selesai dieksekusi.
+
+#### 📝 Prompt 2: Indicator Engine & Advanced Volume (TPO/Profile)
+**Tujuan:** Membangun engine yang bisa menjalankan rumus layaknya "Pine Script" dan memvisualisasikan data volume tingkat lanjut.
+
+```markdown
+**ROLE:** Algorithmic Developer.
+**PROJECT:** SAT-V3 TradingView Clone (Upgrade Phase 2).
+
+**TASK 1: BUILD THE INDICATOR ENGINE (The "Pine" Core)**
+We cannot hardcode 400 indicators. Build a modular `IndicatorSystem`:
+1.  **Registry:** Create a `Map<string, IndicatorCalculationFunction>`.
+2.  **WebWorker:** Move all mathematical calculations to a WebWorker to prevent UI freezing when calculating complex indicators (like 200-period EMA on 10,000 candles).
+3.  **Overlay System:**
+    * *Main Pane:* For Price overlays (Bollinger, Ichimoku, MA, Parabolic SAR).
+    * *Separate Pane:* For Oscillators (RSI, MACD, Stochastic). These must be resizeable and stackable below the main chart.
+
+**TASK 2: IMPLEMENT "ADVANCED VOLUME" (The Pro Features)**
+This is specific to my requirement. Do not use standard libraries.
+1.  **Volume Profile (VPVR):** Calculate the sum of volume at specific price levels for the *visible range*. Render a horizontal histogram on the Right Axis (Opacity 30%).
+2.  **Session Volume Profile:** Split volume profiles by "Day" sessions (00:00 - 23:59).
+3.  **TPO (Time Price Opportunity):** Render letters (A-Z) representing 30-min blocks aggregated by price.
+4.  **Footprint Charts:** Inside the Zoomed-In Candle body, render text showing `Bid x Ask` volume.
+
+**TASK 3: POPULATE THE TOP 50 MOST USED INDICATORS**
+Implement the logic for the top tier categories found on TradingView:
+- **Trend:** SMA, EMA, WMA, Ichimoku Cloud, ADX, Parabolic SAR.
+- **Oscillators:** RSI, Stochastic, CCI, MACD, Awesome Oscillator.
+- **Volatility:** Bollinger Bands, ATR, Keltner Channels.
+- **Volume:** OBV, VWAP (anchored to session start), Money Flow Index.
+
+**UI UPDATE:**
+- Add an "Indicators" modal (dialog) with a search bar that filters this registry.
+Strategi Eksekusi (Batch 3 of 3)
+Terakhir, kita fokus pada Interaksi User (Drawing Tools) yang jumlahnya 110+ dan fitur Replay.
+
+Berikan Prompt 3 ini terakhir.
+
+📝 Prompt 3: 110+ Drawing Tools & Object Tree
+Tujuan: Membuat canvas interaktif yang mendukung geometri kompleks.
+
+Markdown
+
+**ROLE:** UI/UX Developer & Geometry Specialist.
+**PROJECT:** SAT-V3 TradingView Clone (Upgrade Phase 3).
+
+**TASK 1: VECTOR DRAWING ENGINE**
+Refactor the `DrawingLayer` to handle complex vector shapes.
+1.  **Magnet Mode:** Enhance cursor logic to snap to Open/High/Low/Close within a 10px radius.
+2.  **Edit Mode:** Allow clicking an existing drawing to show "Anchor Points" for resizing/rotating.
+3.  **Object Tree:** Create a Right Sidebar Panel showing a list of all active drawings and indicators. Allow "Hide/Lock/Delete" from this list.
+
+**TASK 2: IMPLEMENT THE 6 CATEGORIES OF TOOLS (110+ Items)**
+You must implement the math/rendering for these categories:
+1.  **Lines:** Trendline, Ray, Info Line, Extended Line, Parallel Channel, Flat Top/Bottom.
+2.  **Fibonacci/Gann:**
+    * *Fib Retracement:* Levels (0, 0.236, 0.382, 0.5, 0.618, 0.786, 1, 1.618).
+    * *Fib Extension:* 3-point tool.
+    * *Gann Box & Gann Fan:* Fixed scaling logic.
+3.  **Geometric Shapes:** Brush, Rectangle, Ellipse, Triangle, Polyline, Path.
+4.  **Annotation:** Text, Callout, Price Label, Arrow Marker.
+5.  **Patterns:**
+    * *Head & Shoulders:* 5-point tool (Left Shoulder, Head, Right Shoulder).
+    * *Elliott Wave (12345 & ABC):* Linked lines with labels.
+    * *XABCD Pattern:* Harmonic pattern logic.
+6.  **Prediction/Measurement:**
+    * *Long/Short Position:* The classic Red/Green box with Risk/Reward Ratio calculation.
+    * *Date/Price Range:* Measure % change and bars count.
+    * *Bar Pattern Ghost:* Copy a segment of bars and project them forward (Ghost bars).
+
+**TASK 3: BAR REPLAY MODE**
+Implement a "Time Machine" feature:
+1.  When "Replay" is active, slice the `data` array at the selected timestamp.
+2.  On "Play", append one candle per X milliseconds from the hidden future data to the visible array.
+
+**FINAL POLISH:**
+Ensure the "Ocean Calm" theme applies to all these tools (Teal lines by default, Cyan fill for shapes).
+Rekomendasi Langkah Selanjutnya untuk Anda:
+Jalankan Prompt 1 terlebih dahulu. Biarkan Antigravity menyelesaikan arsitektur 21 chart types.
+
+Cek hasilnya di localhost. Pastikan Anda bisa ganti ke mode Renko atau Heikin Ashi dan bentuknya benar.
+
+Setelah visual chart benar, baru jalankan Prompt 2 (Indikator).
+
+Terakhir jalankan Prompt 3 (Drawing Tools).
+
+Apakah Anda ingin saya memberikan detail spesifik (rumus matematika) untuk salah satu indikator atau chart tipe tertentu agar Antigravity tidak salah hitung?

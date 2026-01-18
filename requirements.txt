@@ -1,0 +1,8 @@
+ccxt
+pandas
+numpy
+streamlit
+python-dotenv
+plotly
+watchdog
+git+https://github.com/twopirllc/pandas-ta.git@development

@@ -1,0 +1,175 @@
+Sekarang, kita masuk ke Sesi Praktikum 7.
+
+Sistem ini sudah punya Otak (Council), Perisai (Risk), dan Memori (State). Tapi ia masih bekerja dalam gelap. Anda tidak bisa melihat apa yang dia pikirkan kecuali membaca log teks yang membosankan.
+
+Kita akan membangun Mata Dewa (The All-Seeing Eye). Sesuai Blueprint Anda: "The Trident Interface". Ini adalah Dashboard Streamlit yang akan menjadi kokpit Anda untuk memantau perang secara live.
+ROLE: AI Software Engineer (Frontend Specialist)
+LOCATION: /Users/izzadev/.gemini/antigravity/scratch/SAT-V3
+
+TASK OBJECTIVE:
+Membangun struktur dasar Dashboard "The Trident Interface" menggunakan Streamlit. Dashboard ini akan membaca data dari `memory.json` untuk menampilkan status terkini secara visual.
+
+INSTRUCTIONS:
+
+1.  **Create Dashboard Skeleton**:
+    Buat file `/src/dashboard/app.py`.
+    
+    Fitur Utama:
+    - **Sidebar**: Kontrol manual (Start/Stop - Placeholder).
+    - **Tab 1 (Command Center)**: Menampilkan Status Bot, PnL Harian, dan Posisi Aktif.
+    - **Tab 2 (War Room)**: (Placeholder untuk analisa 7 Jenderal).
+    - **Tab 3 (Black Box)**: (Placeholder untuk Log).
+    - **Auto-Refresh**: Tombol untuk memuat ulang data dari memori.
+
+    ```python
+    import streamlit as st
+    import pandas as pd
+    import json
+    import os
+    import sys
+    
+    # Tambahkan root path agar bisa import modul src
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    
+    from src.utils.state_manager import StateManager
+
+    # Konfigurasi Halaman
+    st.set_page_config(
+        page_title="SAT-V3 GOD MODE",
+        page_icon="⚡",
+        layout="wide"
+    )
+
+    # Load State Manager
+    # Kita inisialisasi path relatif terhadap lokasi script ini atau absolute path
+    # Asumsi dijalankan dari root project via 'streamlit run src/dashboard/app.py'
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    MEMORY_PATH = os.path.join(BASE_DIR, 'data', 'memory.json')
+    
+    # Judul Dashboard
+    st.title("⚡ SAT-V3: THE TRIDENT INTERFACE")
+    
+    # Fungsi Load Data
+    def load_data():
+        if os.path.exists(MEMORY_PATH):
+            with open(MEMORY_PATH, 'r') as f:
+                return json.load(f)
+        return None
+
+    # Tombol Refresh di Sidebar
+    if st.sidebar.button('🔄 REFRESH DATA'):
+        st.rerun()
+
+    # Load Data Real-time
+    data = load_data()
+    
+    if not data:
+        st.error("⚠️ Memory Connect Failed! (memory.json not found)")
+        st.stop()
+
+    # --- TAB SYSTEM ---
+    tab1, tab2, tab3 = st.tabs(["🚀 COMMAND CENTER", "🧠 WAR ROOM", "📜 BLACK BOX"])
+
+    with tab1:
+        st.subheader("Live Status Monitor")
+        
+        # Baris Atas: Metrics Utama
+        col1, col2, col3, col4 = st.columns(4)
+        
+        status = data.get('status', 'OFFLINE')
+        daily_pnl = data.get('daily_stats', {}).get('pnl_today', 0)
+        trades_count = data.get('daily_stats', {}).get('trades_today', 0)
+        last_update = data.get('last_update', '-')
+
+        with col1:
+            st.metric(label="SYSTEM STATUS", value=status, 
+                      delta="ACTIVE" if status == "IN_POSITION" else "IDLE")
+        with col2:
+            st.metric(label="DAILY PNL (USDT)", value=f"${daily_pnl:.2f}")
+        with col3:
+            st.metric(label="TRADES TODAY", value=trades_count)
+        with col4:
+            st.caption(f"Last Heartbeat:\n{last_update}")
+
+        st.divider()
+
+        # Section Posisi Aktif
+        if status == "IN_POSITION":
+            pos = data['current_position']
+            st.info(f"💎 HOLDING POSITION: {pos['symbol']}")
+            
+            p_col1, p_col2, p_col3, p_col4 = st.columns(4)
+            p_col1.metric("Entry Price", f"${pos['entry_price']}")
+            p_col2.metric("Quantity", f"{pos['quantity']}")
+            p_col3.metric("Stop Loss", f"${pos['stop_loss']}")
+            p_col4.metric("Take Profit", f"${pos['take_profit']}")
+            
+            # Visualisasi Trailing Phase (Progress Bar sederhana)
+            phase = pos.get('trailing_phase', 1)
+            st.write(f"🛡️ Trailing Stop Phase: {phase}/3")
+            if phase == 1:
+                st.progress(33, text="Phase 1: Breathing Room")
+            elif phase == 2:
+                st.progress(66, text="Phase 2: Break Even Secured")
+            elif phase == 3:
+                st.progress(100, text="Phase 3: Profit Locking Mode")
+        else:
+            st.warning("💤 NO ACTIVE POSITIONS. SCANNING MARKET...")
+
+    with tab2:
+        st.write("Waiting for The Council analysis...")
+        # Nanti kita akan visualisasikan Voting Jenderal disini
+        
+    with tab3:
+        st.text_area("System Logs", "Log stream will appear here...", height=300)
+
+    # Footer
+    st.sidebar.markdown("---")
+    st.sidebar.caption(f"SAT-V3 Magnificent 7\nRunning on: {os.getcwd()}")
+    ```
+
+2.  **Validation Script**:
+    Karena Antigravity mungkin tidak bisa membuka browser, kita buat script python biasa untuk mengecek apakah `app.py` valid secara sintaks dan bisa mengimpor module yang dibutuhkan.
+    Buat file `check_dashboard.py`:
+    ```python
+    import sys
+    import os
+    
+    def check_app_integrity():
+        print("🖥️ CHECKING DASHBOARD INTEGRITY...")
+        
+        app_path = 'src/dashboard/app.py'
+        if os.path.exists(app_path):
+            print(f"✅ File found: {app_path}")
+        else:
+            print(f"❌ File missing: {app_path}")
+            return
+
+        # Cek Syntax Error dengan compile
+        try:
+            with open(app_path, 'r') as f:
+                source = f.read()
+            compile(source, app_path, 'exec')
+            print("✅ Syntax Check: PASSED (Valid Python Code)")
+        except Exception as e:
+            print(f"❌ Syntax Check: FAILED ({str(e)})")
+            return
+
+        # Cek Ketersediaan Memory
+        if os.path.exists('data/memory.json'):
+            print("✅ Data Feed: CONNECTED (memory.json found)")
+        else:
+            print("⚠️ Data Feed: WARNING (memory.json missing, app will show error)")
+
+        print("\nℹ️ NOTE: To view dashboard, run this command in terminal:")
+        print("   streamlit run src/dashboard/app.py")
+
+    if __name__ == "__main__":
+        check_app_integrity()
+    ```
+
+EXECUTION COMMANDS:
+`python check_dashboard.py`
+
+OUTPUT EXPECTATION:
+Pastikan `check_dashboard.py` melaporkan bahwa file `app.py` ada, sintaksnya valid, dan koneksi ke `memory.json` berhasil.

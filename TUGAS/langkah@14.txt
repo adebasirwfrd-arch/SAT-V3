@@ -1,0 +1,147 @@
+Ini adalah Blueprint Arsitektur Frontend yang komprehensif untuk mereplikasi fitur charting TradingView secara persis (pixel-perfect) menggunakan React dan Canvas API, yang dirancang khusus untuk dieksekusi oleh Antigravity.
+
+Blueprint ini mengintegrasikan preferensi Anda: Tema "Ocean Calm" (putih bersih dengan aksen teal/cyan) dan koneksi data real-time ke Binance Testnet.
+
+Silakan berikan instruksi di bawah ini langsung ke Antigravity.
+
+📂 PROJECT BLUEPRINT: SAT-V3 ADVANCED CHARTING MODULE
+Goal: Membangun replika frontend TradingView (Supercharts) dengan presisi tinggi, menggantikan live chart lama. Tech Stack: React (Next.js/Vite), TypeScript, HTML5 Canvas API (Custom Renderer), Zustand (State), WebSocket (Native). Theme: Ocean Calm (Light Mode: White Background, Cyan/Teal Gradients).
+
+1. Analisis Fitur Target (Scope of Work)
+Berdasarkan analisis id.tradingview.com/features, sistem harus mencakup:
+
+21 Tipe Chart: Termasuk Time-based (Candle, Bar, Hollow, Line, Area, Baseline) dan Price-based (Renko, Kagi, Point & Figure, Line Break, Heikin Ashi).
+
+Advanced Volume: Volume Footprint, TPO (Time Price Opportunity), Session Volume Profile.
+
+110+ Drawing Tools: Trendline, Fibonacci, Gann, Elliott Wave, Prediction Tools.
+
+Indikator Engine: Support 400+ indikator (MA, RSI, Bollinger, dll) dengan kemampuan overlay.
+
+Multi-Timeframe & Replay: Detik hingga Bulanan, fitur Bar Replay.
+
+2. Arsitektur Teknis (System Design)
+Berikan struktur file dan logika ini kepada Antigravity.
+
+A. Core Directory Structure
+Plaintext
+
+/src
+  /components
+    /ChartEngine
+      CanvasLayer.tsx        // Layer dasar (Grid, Background)
+      CandleSeries.tsx       // Renderer utama Candle/Bar
+      IndicatorLayer.tsx     // Layer kalkulasi & render indikator
+      DrawingLayer.tsx       // Layer interaktif untuk Drawing Tools
+      CursorLayer.tsx        // Crosshair & Tooltip
+    /UI
+      Toolbar.tsx            // Kiri: Drawing tools
+      TopBar.tsx             // Atas: Timeframe, Symbol, Indicators
+      ObjectTree.tsx         // Kanan: Layer management
+  /hooks
+    useDataStream.ts         // WebSocket handler (Binance)
+    useChartInteraction.ts   // Zoom, Pan, Scale logic
+  /lib
+    /math                    // Kalkulasi koordinat (Price -> Pixel)
+    /indicators              // Logika RSI, MACD, Volume Profile
+  /store
+    chartStore.ts            // Global State (Zustand)
+B. Data Adapter (Binance Testnet Integration)
+Instruksikan Antigravity untuk membuat adapter WebSocket yang mengubah stream Binance menjadi format OHLCV yang bisa dirender.
+
+Endpoint: wss://testnet.binance.vision/ws
+
+Data Structure:
+
+TypeScript
+
+interface CandleData {
+  time: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+Buffering: Gunakan Map untuk menyimpan history candle agar performa tetap tinggi saat zoom out (handling 10k+ candles).
+
+C. Rendering Engine (Canvas Optimization)
+Untuk mencapai performa "sama persis", hindari merender setiap frame dengan React Component biasa. Gunakan pendekatan Layered Canvas:
+
+Main Layer (Static): Grid lines, Watermark, Session Breaks. (Render hanya saat resize/pan).
+
+Series Layer (Dynamic): Candlestick, Line, Area, Volume. (Render saat data update).
+
+Interaction Layer (Volatile): Crosshair, Highlight saat hover, Drawing Tool preview. (Render 60fps).
+
+3. Detail Implementasi Fitur (Step-by-Step Prompt)
+Salin bagian ini dan berikan kepada Antigravity sebagai Master Prompt.
+
+🤖 PROMPT UNTUK ANTIGRAVITY
+Markdown
+
+**Role:** Senior Frontend Architect & Graphics Engineer.
+**Task:** Build a TradingView clone specifically for my "SAT-V3" trading bot application.
+**Constraints:** Use React, TypeScript, and raw HTML5 Canvas for maximum performance (do not use wrapper libraries like Chart.js).
+
+**DESIGN SYSTEM (Ocean Calm Theme):**
+- Background: #FFFFFF (Clean White)
+- Grid Lines: #F0F3FA
+- Bullish Candle: Gradient from #00B4DB to #0083B0 (Cyan/Teal)
+- Bearish Candle: #FF6B6B (Soft Red) or #E63946
+- UI Accents: #0083B0 (Teal)
+- Typography: Inter or Roboto, dark gray text (#333).
+
+**PHASE 1: THE CORE ENGINE**
+1. Create a `ChartContainer` component that manages 3 stacked `<canvas>` elements (Background, Main, UI).
+2. Implement a Coordinate System:
+   - Create functions `priceToCoordinate(price, height, scale)` and `timeToCoordinate(time, width, scale)`.
+   - Implement "Logarithmic" and "Linear" scale toggles.
+3. Build the `CandleSeries` renderer:
+   - Must support crisp pixel rendering (handle window.devicePixelRatio).
+   - Implement "Wick" and "Body" drawing logic based on OHLC data.
+
+**PHASE 2: DATA INGESTION (Binance Testnet)**
+1. Connect to `wss://testnet.binance.vision/ws` specifically for the symbol `BTCUSDT`.
+2. Implement a `DataStreamAdapter` that:
+   - Subscribes to `@kline_1m`.
+   - Updates the latest candle in real-time (update Close price and Volume without waiting for candle close).
+   - Backfills historical data via REST API before opening the WebSocket.
+
+**PHASE 3: ADVANCED CHART TYPES (The "Exact Copy" Requirement)**
+Implement logic transformers for non-time-based charts:
+- **Heikin Ashi:** Transform standard OHLC data into HA candles formula before rendering.
+- **Renko:** Aggregate tick data into "Bricks". Only draw a new brick when price movement > `brickSize`.
+- **Volume Footprint:** Create a cluster-based data structure that aggregates volume at specific price levels within each candle (Bid vs Ask). Render this as a heatmap inside the candle body.
+
+**PHASE 4: DRAWING TOOLS & INTERACTION**
+1. Create a "Magnet Mode" feature that snaps the cursor to the nearest High/Low/Open/Close.
+2. Implement the following tools using Vector math:
+   - **Trendline:** Two points (Start, End). Infinite ray option.
+   - **Fibonacci Retracement:** Calculate levels (0, 0.236, 0.382, 0.5, 0.618, 1) based on drag height.
+   - **Long/Short Position Tool:** Visual risk/reward box with transparency overlay (Green/Red).
+3. State Management: Use Zustand to store an array of `DrawingObject` (type, coordinates, properties).
+
+**PHASE 5: INDICATORS**
+1. Integrate `technicalindicators` library for calculations.
+2. Create an `OverlayEngine` that accepts an array of values (e.g., SMA 20 array) and draws a smooth Bezier curve over the candles.
+3. Ensure indicators like RSI or MACD render in a separate "Pane" below the main chart (resizeable height).
+4. Fitur Khusus: "Tanpa Ada Yang Terlewat"
+Untuk memastikan replika ini sempurna, perintahkan Antigravity menangani detail mikro berikut:
+
+Inertia Scrolling: Saat chart di-drag dan dilepas, chart harus meluncur perlahan sebelum berhenti (physics-based dampening), persis seperti UX TradingView.
+
+Smart Scaling: Saat zoom in/out, sumbu harga (Y-axis) harus otomatis menyesuaikan skala (Auto-scale) agar candle selalu terlihat penuh di layar.
+
+Countdown to Close: Tampilkan hitung mundur waktu penutupan candle di sumbu harga sebelah kanan (label kecil berwarna teal).
+
+Symbol Watermark: Tampilkan logo/ticker simbol (misal: "BTCUSDT") secara transparan di tengah background chart.
+
+5. Eksekusi
+Copy Prompt di bagian 3.
+
+Paste ke Antigravity.
+
+Minta Antigravity membuat file README.md terlebih dahulu untuk memverifikasi struktur folder sebelum menulis kode.
+
+Ini akan menghasilkan fondasi frontend yang sangat kuat, ringan, dan siap untuk trading bot SAT-V3 Anda.

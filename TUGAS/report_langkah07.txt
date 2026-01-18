@@ -1,0 +1,7 @@
+🖥️ CHECKING DASHBOARD INTEGRITY...
+✅ File found: src/dashboard/app.py
+✅ Syntax Check: PASSED (Valid Python Code)
+✅ Data Feed: CONNECTED (memory.json found)
+
+ℹ️ NOTE: To view dashboard, run this command in terminal:
+   streamlit run src/dashboard/app.py

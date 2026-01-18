@@ -1,0 +1,226 @@
+📘 MASTER BLUEPRINT: "THE MAGNIFICENT 7" AI TRADING SYSTEM (FINAL VERSION)
+Tujuan: Membangun sistem Swing Trading Semi-Otomatis yang Agresif (memaksimalkan profit saat momentum tinggi) namun Sangat Aman (melindungi modal dari volatilitas dan risiko teknis). Hardware: MacBook Air M4 (16GB RAM) - Local Run. Platform: Binance (Mulai dengan Testnet/Paper Trading). Metode: Multi-Agent System (Ensemble Learning) dengan Human-in-the-Loop.
+
+I. ARSITEKTUR SISTEM (THE ENGINE)
+Sistem ini dirancang untuk berjalan di laptop yang aktif di siang hari dan tidur di malam hari, tanpa mengorbankan keamanan posisi trading.
+
+Bahasa Utama: Python 3.10+
+
+Otak Analisa: Library Teknikal (TA-Lib, Pandas-TA) + AI NLP (Sentiment).
+
+Komunikasi: Asyncio (Internal) & File JSON/SQLite (Penyimpanan Memori/Log).
+
+Frontend: Streamlit (Dashboard Visual dengan 3 Tab).
+
+Koneksi: CCXT Library (Akses API Binance).
+
+II. STRUKTUR TIM BOT (THE SQUAD)
+Sistem terdiri dari 3 Divisi yang bekerja paralel.
+
+DIVISI 1: THE COUNCIL (Dewan Jenderal Analisa)
+Tugas: Memberikan Voting Score (0-100) untuk menentukan arah harga.
+
+The Trend Master (Bobot 20%):
+
+Fokus: Ichimoku Cloud & EMA 200.
+
+Logic: Memastikan arah arus sungai (Major Trend).
+
+The Structure Master (Bobot 20%):
+
+Fokus: Support/Resistance & Supply/Demand Zones.
+
+Logic: Mencegah beli di pucuk (Atap) atau jual di dasar (Lantai).
+
+The Volume Master (Bobot 20%):
+
+Fokus: OBV (On-Balance Volume) & VWAP.
+
+Logic: Validasi apakah pergerakan harga didukung uang asli atau palsu.
+
+The Smart Money Master (Bobot 15%):
+
+Fokus: Fair Value Gap (FVG) & Order Blocks.
+
+Logic: Mengikuti jejak institusi/bandar.
+
+The Pattern Master (Bobot 10%):
+
+Fokus: Pola Candlestick (Engulfing, Hammer, Morning Star).
+
+Logic: Pemicu (Trigger) entry jangka pendek.
+
+The Geometry Master (Bobot 10%):
+
+Fokus: Fibonacci Retracement (Golden Ratio 0.618).
+
+Logic: Mencari titik pantul matematika presisi.
+
+The Indicator Master (Bobot 5%):
+
+Fokus: RSI, MACD, Stochastic.
+
+Logic: Konfirmasi momentum dan divergensi.
+
+DIVISI 2: THE INTEL (Intelijen Berita)
+Tugas: Mengatur tingkat agresivitas sistem.
+
+Bot Sentiment (AI NLP):
+
+Engine: FinBERT / VADER.
+
+Tugas: Membaca berita & sentimen medsos.
+
+Output: Jika sentimen "Extreme Greed/Hype", dia menurunkan ambang batas voting agar Sniper lebih agresif membeli.
+
+DIVISI 3: THE DEFENSE (Pertahanan & Eksekusi)
+Tugas: Menjaga uang dan mengelola order.
+
+Bot Risk Manager (Si Polisi):
+
+Tugas: Menghitung Lot Size berdasarkan Saldo & ATR.
+
+Hak Veto: Membatalkan order jika risiko > 2% modal.
+
+Bot Executioner (Si Kaki Tangan):
+
+Tugas: Mengirim order ke Binance.
+
+Fitur Kunci: Wajib menggunakan order OCO (One Cancels the Other) langsung ke server Binance agar aman saat laptop mati.
+
+III. LOGIKA STRATEGI: "AGRESIF TAPI AMAN"
+1. Mekanisme Voting (Scoring System)
+Bot Sniper (Manager) mengambil keputusan berdasarkan total skor dari 7 Jenderal.
+
+Mode Normal (Konservatif):
+
+Syarat: Sentimen Netral.
+
+Ambang Batas: Skor > 70.
+
+Action: Beli dengan alokasi standar.
+
+Mode HYPE (Agresif):
+
+Syarat: Sentimen > 0.8 (Berita Bagus/Viral).
+
+Ambang Batas: Skor > 50 (Cukup indikasi teknikal sedikit, langsung hajar).
+
+Action: Beli Agresif, tapi Stop Loss diperketat.
+
+2. Smart Trailing Stop (Anti-Gergaji)
+Menggunakan logika ATR (Average True Range) yang dikelola oleh Bot Executioner.
+
+Fase 1: Breathing Room (Awal Entry)
+
+Stop Loss (SL) = Hard SL (-2% atau di bawah Support).
+
+Trailing: NON-AKTIF. Biarkan harga berfluktuasi wajar.
+
+Fase 2: Break Even (Balik Modal)
+
+Syarat: Harga naik +1.5x ATR.
+
+Action: Geser SL ke Harga Entry. Risiko sekarang 0%.
+
+Fase 3: Profit Locking (Penguncian)
+
+Syarat: Harga terus naik.
+
+Rumus: SL Baru = Harga Tertinggi - (3 x ATR).
+
+Multiplier 3x: Memberi jarak aman agar tidak terkena "Gergaji" (koreksi kecil), tapi tetap mengunci profit jika tren berbalik arah.
+
+PENTING: Setiap perubahan SL dilakukan dengan memodifikasi order di Server Binance (Server-Side Order).
+
+IV. DASHBOARD & KONTROL (THE TRIDENT INTERFACE)
+Menggunakan Streamlit Tabs untuk membagi monitoring menjadi 3 zona terpisah dalam satu layar.
+
+TAB 1: LIVE VIEW (COMMAND CENTER)
+Fokus: Eksekusi Cepat & Monitoring Utama.
+
+Visual Utama:
+
+Radar Chart (The Council): Menampilkan arah dominan voting 7 Jenderal.
+
+Sentiment Gauge: Meteran Fear & Greed Real-time.
+
+Live PnL & Price: Harga aset sekarang dan Profit/Loss posisi berjalan.
+
+Visual Trailing Stop: Grafik harga dengan garis putus-putus indikator ATR Trailing Stop (Status Fase 1, 2, atau 3).
+
+Tombol Komando (Manual Override):
+
+🚀 FORCE BUY (ROCKET): Bypass semua voting bot. Langsung Market Buy.
+
+🔒 TIGHTEN STOP (PANIC SAVE): Mengubah mode Trailing Stop dari "Longgar (3x ATR)" menjadi "Ketat (1x ATR)".
+
+🛑 LIQUIDATE ALL: Jual semua posisi sekarang juga dan batalkan semua antrian.
+
+TAB 2: DEEP ANALYSIS (THE WAR ROOM)
+Fokus: Transparansi Alasan ("The Why"). Menampilkan data mentah 7 Jenderal.
+
+Card Trend Master: Status Bullish/Bearish (Above/Below Cloud).
+
+Card Structure Master: Jarak persentase ke Support/Resisten terdekat.
+
+Card Volume Master: Status aliran uang (Valid/Fakeout).
+
+Card Pattern Master: Nama pola candle yang terdeteksi (misal: Bullish Engulfing).
+
+Card Smart Money: Lokasi FVG (Fair Value Gap) terdekat.
+
+Card Geometry: Level Fibonacci terdekat (misal: 0.618).
+
+Card Sentiment: Menampilkan 3 Headline berita teratas & Keyword pemicu skor.
+
+TAB 3: SYSTEM LOGS (THE BLACK BOX)
+Fokus: Rekaman Jejak & Debugging Real-time.
+
+Activity Stream: Log teks berjalan yang mencatat setiap aksi bot (misal: [09:15:23] EXECUTOR: Order sent to Binance #99821).
+
+Error Tracking: Notifikasi merah jika ada putus koneksi atau error API.
+
+Memory Check: Log pembacaan file memory.json saat start-up pagi hari.
+
+V. PROTOKOL KEAMANAN (NIGHT MODE)
+Karena sistem berjalan di MacBook (bukan Server 24 jam), protokol ini wajib aktif sebelum Anda tidur:
+
+Cek OCO: Bot memastikan setiap posisi terbuka SUDAH memiliki Stop Loss dan Take Profit yang terpasang di sistem Binance.
+
+Log State: Bot menyimpan data terakhir (Harga beli, Level Trailing Stop terakhir) ke file lokal (memory.json).
+
+Booting Pagi: Saat laptop dinyalakan, Bot membaca memory.json, mengecek harga pasar saat ini, lalu menyesuaikan (Amend) order Stop Loss jika perlu.
+
+VI. ROADMAP EKSEKUSI (30 HARI)
+Minggu 1: Pondasi & Basic Bot
+
+Setup Python env, install library.
+
+Koneksi ke Binance Testnet.
+
+Buat Bot Risk Manager & Executioner (Tes Hard SL & OCO).
+
+Minggu 2: Membangun The Council
+
+Coding logika 7 Jenderal.
+
+Integrasi sistem Voting.
+
+Minggu 3: Intelligence & Trident Dashboard
+
+Tambahkan Bot Sentimen (NLP).
+
+Bangun Dashboard Streamlit dengan 3 Tab (Live, Analysis, Log).
+
+Coding logika ATR Trailing Stop.
+
+Minggu 4: Live War Game (Paper Trading)
+
+Jalankan sistem penuh sesuai jam pasar.
+
+Uji coba matikan laptop malam hari.
+
+Evaluasi Win Rate dan R:R (Risk Reward).
+
+Blueprint selesai. Ini adalah panduan final yang utuh.

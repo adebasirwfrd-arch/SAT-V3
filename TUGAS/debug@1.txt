@@ -1,0 +1,41 @@
+Last login: Wed Jan 14 21:36:29 on ttys023
+izzadev@Izzas-MacBook-Air ~ % cd /Users/izzadev/.gemini/antigravity/scratch/SAT-V3
+./run_mac_local.sh
+🍏 STARTING SAT-V3 (Local MacBook Mode)...
+☕ Activating Caffeine (Preventing Sleep)...
+📊 Launching Dashboard...
+🤖 Launching Engine (Press Ctrl+C to Stop)...
+/Users/izzadev/.gemini/antigravity/scratch/SAT-V3/venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🚀 INITIALIZING SAT-V3 (MacBook M4 Edition)...
+⚠️ RUNNING IN BINANCE TESTNET (SANDBOX) MODE
+✅ Connected to Binance Network
+
+⏰ 02:38:23 | SCANNING...
+
+📰 ANALYZING 4 HEADLINES:
+   > Bitcoin consolidates around $50k... (0.00)
+   > Top 10 altcoins to watch this week... (0.20)
+   > Crypto market shows mixed signals... (0.00)
+   > Analyst predicts sideways movement... (0.00)
+
+🌐 MARKET MOOD: NORMAL (Score: 0.05)
+
+--- 🗳️ COUNCIL VOTING SESSION ---
+👤 The Trend Master: NEUTRAL (50)
+👤 The Structure Master: SELL (10)
+👤 The Volume Master: SELL (20)
+👤 The Indicator Master: SELL (25)
+👤 The Smart Money Master: NEUTRAL (50)
+👤 The Pattern Master: NEUTRAL (50)
+👤 The Geometry Master: NEUTRAL (50)
+--- ⚖️ FINAL VERDICT: SELL (Score: 34.75 | Threshold: 70) ---
+
+🛡️ TRAILING: Activating Phase 2 (Break Even)
+💰 TAKE PROFIT HIT! Selling...
+❌ ORDER FAILED: binance {"code":-2015,"msg":"Invalid API-key, IP, or permissions for action."}
+💾 STATE CLEARED: Position closed. Back to IDLE.
+^C🛑 SHUTDOWN.
+./run_mac_local.sh: line 21: kill: (17855) - No such process
+👋 Bye!
+izzadev@Izzas-MacBook-Air SAT-V3 % 

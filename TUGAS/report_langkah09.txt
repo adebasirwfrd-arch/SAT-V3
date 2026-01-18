@@ -1,0 +1,84 @@
+/Users/izzadev/.gemini/antigravity/scratch/SAT-V3/venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+🚀 INITIALIZING SAT-V3 GOD TIER SYSTEM...
+✅ Connected to Binance Network
+
+⏰ CYCLE START: 02:24:48
+⚠️ Insufficient live data (199 candles)
+🔄 SWITCHING TO SIMULATION DATA FEED...
+💲 Current Price (BTC/USDT): $49130.20
+
+📰 ANALYZING 4 HEADLINES:
+   > Bitcoin breaks $100k barrier as institutions rush ... (-0.13)
+   > SEC approves new Crypto ETF, market soars... (0.40)
+   > Michael Saylor buys more Bitcoin... (0.00)
+   > Inflation drops, Fed hints at rate cuts... (-0.30)
+
+🌐 MARKET MOOD: NORMAL (Score: -0.01)
+
+--- 🗳️ COUNCIL VOTING SESSION ---
+👤 The Trend Master: SELL (0)
+👤 The Structure Master: BUY (90)
+👤 The Volume Master: SELL (20)
+👤 The Indicator Master: NEUTRAL (50)
+👤 The Smart Money Master: NEUTRAL (50)
+👤 The Pattern Master: NEUTRAL (50)
+👤 The Geometry Master: NEUTRAL (50)
+--- ⚖️ FINAL VERDICT: NEUTRAL (Score: 42.00 | Threshold: 70) ---
+
+💎 POSITION OPEN. Unrealized PnL: $-86.98
+--------------------------------------------------
+
+⏰ CYCLE START: 02:24:52
+⚠️ Insufficient live data (199 candles)
+🔄 SWITCHING TO SIMULATION DATA FEED...
+💲 Current Price (BTC/USDT): $52714.24
+
+📰 ANALYZING 4 HEADLINES:
+   > Bitcoin breaks $100k barrier as institutions rush ... (-0.13)
+   > SEC approves new Crypto ETF, market soars... (0.40)
+   > Michael Saylor buys more Bitcoin... (0.00)
+   > Inflation drops, Fed hints at rate cuts... (-0.30)
+
+🌐 MARKET MOOD: NORMAL (Score: -0.01)
+
+--- 🗳️ COUNCIL VOTING SESSION ---
+👤 The Trend Master: BUY (100)
+👤 The Structure Master: SELL (10)
+👤 The Volume Master: SELL (20)
+👤 The Indicator Master: BUY (75)
+👤 The Smart Money Master: NEUTRAL (50)
+👤 The Pattern Master: NEUTRAL (50)
+👤 The Geometry Master: NEUTRAL (50)
+--- ⚖️ FINAL VERDICT: NEUTRAL (Score: 47.25 | Threshold: 70) ---
+
+💎 POSITION OPEN. Unrealized PnL: $271.42
+--------------------------------------------------
+
+⏰ CYCLE START: 02:24:54
+⚠️ Insufficient live data (199 candles)
+🔄 SWITCHING TO SIMULATION DATA FEED...
+💲 Current Price (BTC/USDT): $48647.40
+
+📰 ANALYZING 4 HEADLINES:
+   > Bitcoin breaks $100k barrier as institutions rush ... (-0.13)
+   > SEC approves new Crypto ETF, market soars... (0.40)
+   > Michael Saylor buys more Bitcoin... (0.00)
+   > Inflation drops, Fed hints at rate cuts... (-0.30)
+
+🌐 MARKET MOOD: NORMAL (Score: -0.01)
+
+--- 🗳️ COUNCIL VOTING SESSION ---
+👤 The Trend Master: SELL (15)
+👤 The Structure Master: NEUTRAL (50)
+👤 The Volume Master: BUY (80)
+👤 The Indicator Master: BUY (75)
+👤 The Smart Money Master: NEUTRAL (50)
+👤 The Pattern Master: NEUTRAL (50)
+👤 The Geometry Master: NEUTRAL (50)
+--- ⚖️ FINAL VERDICT: NEUTRAL (Score: 50.25 | Threshold: 70) ---
+
+💎 POSITION OPEN. Unrealized PnL: $-135.26
+--------------------------------------------------
+
+✅ MAIN ENGINE TEST COMPLETE.

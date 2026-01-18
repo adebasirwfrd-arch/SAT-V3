@@ -1,0 +1,51 @@
+Baik, itu jauh lebih bagus! Menggunakan data real-time dari Binance Testnet akan langsung menguji performa rendering saat harga bergerak cepat (ticking).
+
+Kita akan memodifikasi perintahnya. Alih-alih membuat Mock Data generator, kita akan meminta Antigravity untuk menyiapkan Interface (Props) agar komponen chart bisa menerima data eksternal yang Anda miliki.
+
+Silakan gunakan Modified Prompt Tahap 2 ini:
+
+🕯️ PROMPT TAHAP 2: Live Data Integration & Candle Renderer
+Copy & Paste perintah ini ke Antigravity:
+
+Plaintext
+
+Excellent. Now, let's implement the **Candlestick Renderer** and connect it to the real-time data source.
+
+**Change of Plan:**
+Skip the mock data generator. I already have live trading data coming from Binance Testnet.
+
+**Task:**
+Update `ChartCanvas.tsx` to accept this external data and render the candles.
+
+1.  **Data Integration (Props Interface):**
+    * Update the `ChartCanvas` component to accept a prop: `data: CandleData[]`.
+    * Ensure the component efficiently re-renders when the `data` prop updates (new tick arrives).
+    * *Optimization Tip:* Use a `useEffect` hook that triggers the `draw()` function whenever `data` or `visibleRange` changes.
+
+2.  **Rendering Logic (`drawCandles`):**
+    * Implement the drawing logic on "Layer 2".
+    * Iterate through `data`, but **ONLY** render candles within the current `visibleRange` (plus buffer) to maintain high FPS on large datasets.
+    * **The Math:**
+        * `Body`: Rectangle between `Open` and `Close`.
+        * `Wick`: Vertical line from `High` to `Low`, centered.
+        * `BarWidth`: Dynamic based on zoom/scale.
+
+3.  **Visual Style (TradingView "Ocean Calm" Theme):**
+    * **Up Candle (Close > Open):**
+        * Body: `#089981` (Teal Green)
+        * Wick: `#089981`
+    * **Down Candle (Close < Open):**
+        * Body: `#F23645` (Soft Red)
+        * Wick: `#F23645`
+    * Ensure pixel-perfect crisp lines (no anti-aliasing blur).
+
+**Output:**
+Provide the updated `ChartCanvas.tsx` code focusing on the `drawCandles` function and how it handles the `data` prop update.
+Catatan untuk Anda, Prof: Setelah kode ini di-generate, tugas Anda di file induk (misalnya App.tsx atau Dashboard.tsx) adalah mengoper state data Binance Anda ke komponen ini.
+
+Contoh nanti di kode Anda:
+
+TypeScript
+
+<ChartCanvas data={binanceCandles} ... />
+Silakan dieksekusi! Beritahu saya jika candle-nya sudah muncul berjoget mengikuti harga pasar.

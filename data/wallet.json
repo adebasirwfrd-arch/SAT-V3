@@ -1,0 +1,13 @@
+{
+  "cash": 90000.0,
+  "holdings": {
+    "BTC/USDT": {
+      "quantity": 0.10514250963184246,
+      "entry_price": 95109.01,
+      "total_cost": 10000.0,
+      "current_value": 10000.0
+    }
+  },
+  "realized_pnl": 0.0,
+  "max_balance": 100000.0
+}

@@ -1,0 +1,253 @@
+Misi Terakhir: The Local Deployment (MacBook M4 Edition)
+Kita tidak perlu sewa VPS. Kita hanya perlu memodifikasi Launcher Script dan Main Engine agar:
+
+Anti-Tidur: Memaksa MacOS tetap bangun selama bot berjalan.
+
+Real Execution: Mengubah mode dari "Simulasi Random" menjadi "Binance Testnet Execution" (Sesuai Blueprint: Paper Trading).
+
+Wired Dashboard: Menghubungkan tombol Dashboard agar berfungsi.
+
+Berikut adalah langkah final yang disesuaikan khusus untuk MacBook Local Run.
+ROLE: AI Software Engineer (MacOS Specialist)
+LOCATION: /Users/izzadev/.gemini/antigravity/scratch/SAT-V3
+
+TASK OBJECTIVE:
+1. Mengupdate `src/main.py` agar mendukung Eksekusi Order Nyata (Testnet) dan Trailing Stop.
+2. Membuat Launcher khusus MacOS yang mencegah laptop tidur (`caffeinate`).
+
+INSTRUCTIONS:
+
+1.  **Apply Production Logic Patch**:
+    Kita perlu meng-update `src/main.py` agar tidak lagi menggunakan data dummy random, melainkan logika trading sesungguhnya.
+    
+    Timpa (Overwrite) isi `src/main.py` dengan kode berikut:
+    
+    ```python
+    import time
+    import pandas as pd
+    from datetime import datetime
+    import ccxt
+    import os
+    import sys
+    import json
+    
+    # Setup Path
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+    from src.council.chairman import TheChairman
+    from src.utils.risk_manager import RiskManager
+    from src.utils.state_manager import StateManager
+    from config.settings import Config
+
+    class SATV3_Engine:
+        def __init__(self):
+            print(f"🚀 INITIALIZING SAT-V3 (MacBook M4 Edition)...")
+            self.brain = StateManager()
+            self.chairman = TheChairman() 
+            self.risk_manager = RiskManager()
+            
+            # KONEKSI BINANCE ASLI (Testnet/Real)
+            try:
+                self.exchange = ccxt.binance({
+                    'apiKey': Config.API_KEY,
+                    'secret': Config.SECRET_KEY,
+                    'options': {'defaultType': 'spot'}
+                })
+                # Set Sandbox Mode jika di config Testnet
+                if Config.SANDBOX:
+                    self.exchange.set_sandbox_mode(True)
+                    print("⚠️ RUNNING IN BINANCE TESTNET (SANDBOX) MODE")
+                
+                self.exchange.load_markets()
+                print("✅ Connected to Binance Network")
+            except Exception as e:
+                print(f"❌ CRITICAL: Binance Connection Failed: {e}")
+                sys.exit(1) # Stop jika tidak bisa connect exchange
+
+        def get_market_data(self):
+            """Mengambil data Candle Real-Time dari Binance"""
+            try:
+                ohlcv = self.exchange.fetch_ohlcv(Config.SYMBOL, timeframe='1h', limit=200)
+                df = pd.DataFrame(ohlcv, columns=['time', 'open', 'high', 'low', 'close', 'volume'])
+                df['time'] = pd.to_datetime(df['time'], unit='ms')
+                
+                # Inject Indicator
+                import pandas_ta as ta
+                df.ta.strategies = ta.CommonStrategy
+                return df
+            except Exception as e:
+                print(f"⚠️ Data Feed Error: {e}")
+                return None
+
+        def execute_order(self, side, quantity, price=None, params={}):
+            """Fungsi Eksekusi Order ke Binance"""
+            try:
+                if side == 'buy':
+                    order = self.exchange.create_market_buy_order(Config.SYMBOL, quantity, params)
+                elif side == 'sell':
+                    order = self.exchange.create_market_sell_order(Config.SYMBOL, quantity, params)
+                
+                print(f"⚡ ORDER EXECUTED: {side.upper()} {quantity} {Config.SYMBOL}")
+                return order
+            except Exception as e:
+                print(f"❌ ORDER FAILED: {str(e)}")
+                return None
+
+        def check_dashboard_commands(self):
+            """Mengecek apakah ada perintah manual dari Dashboard (via file flag)"""
+            # Implementasi sederhana: Cek file command.json (bisa dikembangkan nanti)
+            pass
+
+        def manage_trailing_stop(self, current_price, atr):
+            """Logika Trailing Stop 3 Fase"""
+            pos = self.brain.state['current_position']
+            phase = pos.get('trailing_phase', 1)
+            entry_price = pos['entry_price']
+            current_sl = pos['stop_loss']
+            
+            new_sl = current_sl
+            updated = False
+
+            # FASE 2: BREAK EVEN
+            if phase == 1:
+                # Jika profit > 1.5x ATR, geser ke BEP
+                if current_price > (entry_price + (1.5 * atr)):
+                    new_sl = entry_price * 1.001 # Sedikit diatas entry untuk cover fee
+                    phase = 2
+                    print("🛡️ TRAILING: Activating Phase 2 (Break Even)")
+                    updated = True
+
+            # FASE 3: PROFIT LOCKING (Dynamic)
+            elif phase >= 2:
+                # SL selalu di bawah harga tertinggi sejarak 3x ATR
+                proposed_sl = current_price - (3 * atr)
+                if proposed_sl > current_sl: # Hanya geser SL ke atas, jangan turun
+                    new_sl = proposed_sl
+                    phase = 3
+                    print(f"🛡️ TRAILING: Phase 3 Update (SL: {new_sl:.2f})")
+                    updated = True
+
+            if updated:
+                # Update Memory
+                pos['stop_loss'] = new_sl
+                pos['trailing_phase'] = phase
+                self.brain.save_state()
+
+        def run_cycle(self):
+            print(f"\n⏰ {datetime.now().strftime('%H:%M:%S')} | SCANNING...")
+            
+            # 1. Get Data
+            df = self.get_market_data()
+            if df is None: return
+
+            current_price = df['close'].iloc[-1]
+            atr = self.risk_manager.calculate_atr(df)
+            
+            # 2. Voting
+            verdict = self.chairman.solicit_votes(df)
+            signal = verdict['final_signal']
+            
+            current_state = self.brain.state['status']
+            
+            # --- LOGIKA IDLE (MENCARI POSISI) ---
+            if current_state == "IDLE":
+                if "BUY" in signal:
+                    # Hitung Risk
+                    plan = self.risk_manager.calculate_entry_params(10000, current_price, atr) # Asumsi saldo $10k test
+                    
+                    print(f"⚡ SIGNAL: BUY! Executing...")
+                    
+                    # EKSEKUSI REAL (Testnet)
+                    order = self.execute_order('buy', plan['quantity'])
+                    
+                    if order:
+                        # Simpan State
+                        trade_data = {
+                            'symbol': Config.SYMBOL,
+                            'entry_price': order['average'] if order['average'] else current_price,
+                            'quantity': plan['quantity'],
+                            'stop_loss': plan['stop_loss'],
+                            'take_profit': plan['take_profit'],
+                            'order_id': order['id']
+                        }
+                        self.brain.update_position(trade_data)
+                else:
+                    print(f"💤 Market: {verdict['final_signal']} (Score: {verdict['final_score']:.2f})")
+
+            # --- LOGIKA IN POSITION (MANAGE POSISI) ---
+            elif current_state == "IN_POSITION":
+                self.manage_trailing_stop(current_price, atr)
+                
+                pos = self.brain.state['current_position']
+                
+                # Cek Exit Condition (SL or TP Manual Logic for simplicity)
+                # Di production real, OCO order di exchange akan handle ini.
+                # Disini kita cek manual tiap loop.
+                
+                if current_price <= pos['stop_loss']:
+                    print("🛑 STOP LOSS HIT! Selling...")
+                    self.execute_order('sell', pos['quantity'])
+                    self.brain.close_position()
+                    
+                elif current_price >= pos['take_profit']:
+                    print("💰 TAKE PROFIT HIT! Selling...")
+                    self.execute_order('sell', pos['quantity'])
+                    self.brain.close_position()
+                    
+                elif signal == "STRONG SELL":
+                    print("🚨 SIGNAL REVERSAL! Panic Selling...")
+                    self.execute_order('sell', pos['quantity'])
+                    self.brain.close_position()
+                
+                else:
+                    pnl = (current_price - pos['entry_price']) * pos['quantity']
+                    print(f"💎 HOLDING. PnL: ${pnl:.2f} | SL: {pos['stop_loss']:.2f}")
+
+    if __name__ == "__main__":
+        bot = SATV3_Engine()
+        try:
+            while True:
+                bot.run_cycle()
+                time.sleep(60) # Loop setiap 1 menit (sesuai timeframe pendek untuk tes)
+        except KeyboardInterrupt:
+            print("🛑 SHUTDOWN.")
+    ```
+
+2.  **Create "MacOS Insomnia Launcher"**:
+    Buat file `run_mac_local.sh`.
+    Script ini menggunakan perintah `caffeinate` untuk mencegah Mac tidur selama script berjalan.
+    
+    ```bash
+    #!/bin/bash
+
+    echo "🍏 STARTING SAT-V3 (Local MacBook Mode)..."
+    echo "☕ Activating Caffeine (Preventing Sleep)..."
+
+    # 1. Activate Venv
+    source venv/bin/activate
+
+    # 2. Launch Dashboard (Background)
+    echo "📊 Launching Dashboard..."
+    streamlit run src/dashboard/app.py --server.port 8501 --server.headless true > logs/dashboard.log 2>&1 &
+    DASHBOARD_PID=$!
+
+    # 3. Launch Bot dengan Caffeinate
+    # -i: Prevent idle sleep (layar boleh mati, sistem tidak)
+    # -s: Prevent system sleep (saat dicolok power)
+    echo "🤖 Launching Engine (Press Ctrl+C to Stop)..."
+    caffeinate -i -s python src/main.py
+
+    # 4. Cleanup
+    kill $DASHBOARD_PID
+    echo "👋 Bye!"
+    ```
+
+3.  **Make Executable**:
+    `chmod +x run_mac_local.sh`
+
+EXECUTION COMMANDS:
+1. Jalankan `run_mac_local.sh`
+2. Buka Browser di `http://localhost:8501` untuk melihat Dashboard.
+
+OUTPUT EXPECTATION:
+Bot harus berjalan, connect ke Binance (pastikan Testnet Key benar), dan tidak mati meskipun layar laptop meredup (asal jangan ditutup lid-nya jika tidak disetting khusus).

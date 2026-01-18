@@ -1,0 +1,106 @@
+{
+  "timestamp": "2026-01-16 17:35:25",
+  "assets": {
+    "BTC": {
+      "symbol": "BTC/USDT",
+      "coin": "BTC",
+      "price": 95410.85,
+      "price_change": -202.67999999999302,
+      "rsi": 55.614721184399144,
+      "atr": 4313.823131908707,
+      "council_score": 56.749999999999986,
+      "signal": "NEUTRAL",
+      "sentiment": "FEAR (Panic)",
+      "regime": "BULLISH"
+    },
+    "ETH": {
+      "symbol": "ETH/USDT",
+      "coin": "ETH",
+      "price": 3299.64,
+      "price_change": -7.800000000000182,
+      "rsi": 55.59000708717216,
+      "atr": 98.84370920230867,
+      "council_score": 46.74999999999999,
+      "signal": "NEUTRAL",
+      "sentiment": "NORMAL",
+      "regime": "BEARISH"
+    },
+    "SOL": {
+      "symbol": "SOL/USDT",
+      "coin": "SOL",
+      "price": 142.84,
+      "price_change": -0.27000000000001023,
+      "rsi": 67.19101123595522,
+      "atr": 1.0405357521603427,
+      "council_score": 46.24999999999999,
+      "signal": "NEUTRAL",
+      "sentiment": "FEAR (Panic)",
+      "regime": "BEARISH"
+    },
+    "BNB": {
+      "symbol": "BNB/USDT",
+      "coin": "BNB",
+      "price": 934.05,
+      "price_change": -1.3700000000000045,
+      "rsi": 64.6629026901362,
+      "atr": 24.09674054825385,
+      "council_score": 52.249999999999986,
+      "signal": "NEUTRAL",
+      "sentiment": "NORMAL",
+      "regime": "BULLISH"
+    },
+    "TON": {
+      "symbol": "TON/USDT",
+      "coin": "TON",
+      "price": 1.722,
+      "price_change": 0.0009999999999998899,
+      "rsi": 67.32673267326733,
+      "atr": 0.009600737668507216,
+      "council_score": 50.249999999999986,
+      "signal": "NEUTRAL",
+      "sentiment": "FEAR (Panic)",
+      "regime": "BULLISH"
+    },
+    "XRP": {
+      "symbol": "XRP/USDT",
+      "coin": "XRP",
+      "price": 2.064,
+      "price_change": -0.0047000000000001485,
+      "rsi": 47.57118927973204,
+      "atr": 0.0148061881655631,
+      "council_score": 40.24999999999999,
+      "signal": "NEUTRAL",
+      "sentiment": "NORMAL",
+      "regime": "BEARISH"
+    }
+  },
+  "portfolio": {
+    "cash": 3390.7455755852748,
+    "equity": 4766.825490285199,
+    "realized_pnl": 0.37813678492773306,
+    "max_drawdown": 52.331745097148016,
+    "holdings": {
+      "ETH/USDT": {
+        "qty": 0.2360737382416787,
+        "entry_price": 3316.8,
+        "current_price": 3299.64,
+        "current_value": 778.9583496517727,
+        "stop_loss": 3090.341337234882,
+        "take_profit": 3769.717325530237,
+        "trailing_phase": 1,
+        "order_id": "SIM-1768551794"
+      },
+      "BTC/USDT": {
+        "qty": 0.006258424121031848,
+        "entry_price": 95609.83,
+        "current_price": 95410.85,
+        "current_value": 597.1215650481515,
+        "stop_loss": 86357.37468292192,
+        "take_profit": 114114.74063415619,
+        "trailing_phase": 1,
+        "order_id": "SIM-1768555174"
+      }
+    },
+    "open_positions": 2
+  }
+}

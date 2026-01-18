@@ -1,0 +1,15 @@
+🧠 TESTING ELEPHANT MEMORY (State Persistence)...
+
+🤖 [SESSION 1] Bot Starting...
+💾 Memory file not found. Creating new brain...
+   Initial Status: IDLE
+   >>> BUY EXECUTED!
+💾 STATE SAVED: Entered position on BTC/USDT
+
+💥 [CRASH] System going down... (Deleting object)
+
+🤖 [SESSION 2] Bot Restarting (Rebooting)...
+   Restored Status: IN_POSITION
+   Restored Position: BTC/USDT @ $50000
+
+✅ TEST PASSED: Bot remembers position after restart.

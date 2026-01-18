@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.10514250963184246,
+    "entry_price": 95109.01,
+    "timestamp": "2026-01-18 15:38:10",
+    "status": "ACTIVE"
+  }
+]

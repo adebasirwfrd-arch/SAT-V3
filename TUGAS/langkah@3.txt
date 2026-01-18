@@ -1,0 +1,210 @@
+Sesi Praktikum 3: Membentuk Dewan Jenderal (Part 1)
+Satu jenderal saja tidak cukup untuk mengambil keputusan "God Tier". Kita butuh konsensus. Di sesi ini, kita akan melahirkan 3 Jenderal berikutnya yang logikanya lebih matematis namun krusial:
+
+The Structure Master: Penjaga Support & Resistance (Mencegah beli di pucuk).
+
+The Volume Master: Detektor aliran uang (Validasi tren).
+
+The Indicator Master: Spesialis Momentum (RSI & MACD).
+ROLE: AI Software Engineer (Trading Systems Architect)
+LOCATION: /Users/izzadev/.gemini/antigravity/scratch/SAT-V3
+
+TASK OBJECTIVE:
+Mengimplementasikan 3 Jenderal tambahan untuk melengkapi "The Council" (Structure, Volume, Indicator).
+
+INSTRUCTIONS:
+
+1.  **Implement General 2: The Structure Master**:
+    Buat file `/src/council/structure_master.py`.
+    Logic: Menggunakan Donchian Channel (High/Low 20 periode terakhir) untuk menentukan Support/Resistance.
+    
+    ```python
+    from .base_general import BaseGeneral
+    import pandas_ta as ta
+
+    class StructureMaster(BaseGeneral):
+        def __init__(self):
+            super().__init__("The Structure Master", weight=0.20)
+
+        def analyze(self, df):
+            if len(df) < 50:
+                return {'score': 50, 'signal': 'NEUTRAL', 'reason': 'Not enough data'}
+
+            # Support & Resistance (Donchian Channel 20)
+            # Menggunakan max high dan min low dari 20 candle terakhir
+            recent_high = df['high'].rolling(20).max().iloc[-1]
+            recent_low = df['low'].rolling(20).min().iloc[-1]
+            close = df['close'].iloc[-1]
+            
+            # Hitung posisi harga relatif (0% = di support, 100% = di resistance)
+            range_size = recent_high - recent_low
+            if range_size == 0: range_size = 1 # Prevent div by zero
+            
+            position_pct = (close - recent_low) / range_size
+            
+            score = 50
+            reasons = []
+
+            # Logic: Beli jika dekat Support (Pantulan), Jual jika dekat Resistance (Atap)
+            # Kita cari "Discount" (Murah) vs "Premium" (Mahal)
+            
+            if position_pct < 0.2: # Harga di 20% bawah (Murah/Dekat Support)
+                score += 40
+                reasons.append("Near Support (Discount Zone)")
+            elif position_pct > 0.8: # Harga di 20% atas (Mahal/Dekat Resistance)
+                score -= 40
+                reasons.append("Near Resistance (Premium Zone)")
+            else:
+                reasons.append("Middle of Structure")
+
+            # Final Decision
+            signal = "NEUTRAL"
+            if score >= 70: signal = "BUY"
+            elif score <= 30: signal = "SELL"
+
+            return {'score': score, 'signal': signal, 'reason': ", ".join(reasons)}
+    ```
+
+2.  **Implement General 3: The Volume Master**:
+    Buat file `/src/council/volume_master.py`.
+    Logic: Menggunakan OBV (On-Balance Volume). Jika harga naik tapi volume turun = Fakeout.
+    
+    ```python
+    from .base_general import BaseGeneral
+    import pandas_ta as ta
+
+    class VolumeMaster(BaseGeneral):
+        def __init__(self):
+            super().__init__("The Volume Master", weight=0.20)
+
+        def analyze(self, df):
+            if len(df) < 50: return {'score': 50, 'signal': 'NEUTRAL', 'reason': 'No data'}
+
+            # Hitung OBV
+            df['OBV'] = df.ta.obv()
+            
+            # Hitung OBV EMA (Smoothing) untuk melihat tren volume
+            obv_ema = df['OBV'].ewm(span=20).mean()
+            
+            current_obv = df['OBV'].iloc[-1]
+            current_obv_ema = obv_ema.iloc[-1]
+            
+            score = 50
+            reasons = []
+
+            # Logic: Uang (Volume) harus mendukung tren
+            if current_obv > current_obv_ema:
+                score += 30
+                reasons.append("Volume Trend Bullish (OBV > EMA)")
+            else:
+                score -= 30
+                reasons.append("Volume Trend Bearish (OBV < EMA)")
+
+            signal = "NEUTRAL"
+            if score >= 60: signal = "BUY"
+            elif score <= 40: signal = "SELL"
+
+            return {'score': score, 'signal': signal, 'reason': ", ".join(reasons)}
+    ```
+
+3.  **Implement General 4: The Indicator Master**:
+    Buat file `/src/council/indicator_master.py`.
+    Logic: RSI (Overbought/Oversold) + MACD (Momentum).
+    
+    ```python
+    from .base_general import BaseGeneral
+    import pandas_ta as ta
+
+    class IndicatorMaster(BaseGeneral):
+        def __init__(self):
+            super().__init__("The Indicator Master", weight=0.05) # Bobot kecil hanya konfirmasi
+
+        def analyze(self, df):
+            # RSI
+            rsi = df.ta.rsi(length=14).iloc[-1]
+            
+            # MACD
+            macd = df.ta.macd()
+            # Kolom MACD biasanya: MACD_12_26_9, MACDh_12_26_9 (Histogram), MACDs_12_26_9 (Signal)
+            # Kita pakai nama kolom generik pandas_ta
+            macd_line = macd[macd.columns[0]].iloc[-1]
+            macd_signal = macd[macd.columns[2]].iloc[-1]
+
+            score = 50
+            reasons = []
+
+            # Logic RSI
+            if rsi < 30:
+                score += 25
+                reasons.append("RSI Oversold")
+            elif rsi > 70:
+                score -= 25
+                reasons.append("RSI Overbought")
+            else:
+                reasons.append("RSI Neutral")
+
+            # Logic MACD
+            if macd_line > macd_signal:
+                score += 25
+                reasons.append("MACD Bullish Cross")
+            else:
+                score -= 25
+                reasons.append("MACD Bearish Cross")
+
+            signal = "NEUTRAL"
+            if score >= 70: signal = "BUY"
+            elif score <= 30: signal = "SELL"
+
+            return {'score': score, 'signal': signal, 'reason': ", ".join(reasons)}
+    ```
+
+4.  **Update Test Script**:
+    Update `test_council.py` untuk menguji ke-4 Jenderal sekaligus.
+    ```python
+    import pandas as pd
+    import numpy as np
+    from src.council.trend_master import TrendMaster
+    from src.council.structure_master import StructureMaster
+    from src.council.volume_master import VolumeMaster
+    from src.council.indicator_master import IndicatorMaster
+
+    def run_test():
+        print("🧪 Generating Dummy Market Data...")
+        dates = pd.date_range(start='2024-01-01', periods=300, freq='1h')
+        df = pd.DataFrame({'time': dates})
+        # Scenario: Harga naik, Volume naik (Ideal Bullish)
+        df['close'] = np.linspace(100, 200, 300) 
+        df['high'] = df['close'] + 5
+        df['low'] = df['close'] - 5
+        df['open'] = df['close'] - 2
+        df['volume'] = np.linspace(1000, 5000, 300) # Volume naik
+
+        generals = [
+            TrendMaster(),
+            StructureMaster(),
+            VolumeMaster(),
+            IndicatorMaster()
+        ]
+
+        print(f"\n🏛️ THE COUNCIL IS ASSEMBLING ({len(generals)} Generals)...")
+        
+        for general in generals:
+            try:
+                result = general.analyze(df)
+                print(f"\n👤 {general.name}:")
+                print(f"   Score: {result['score']}")
+                print(f"   Signal: {result['signal']}")
+                print(f"   Reason: {result['reason']}")
+            except Exception as e:
+                print(f"❌ {general.name} CRASHED: {str(e)}")
+
+    if __name__ == "__main__":
+        run_test()
+    ```
+
+EXECUTION COMMANDS:
+Jalankan `python test_council.py` dan simpan outputnya.
+
+OUTPUT EXPECTATION:
+Pastikan keempat jenderal memberikan laporan tanpa error.
+Catatan: Structure Master mungkin akan memberikan sinyal "SELL" atau "NEUTRAL" di data dummy karena harga `close` kita buat terus naik (berarti selalu di pucuk/resistance), yang mana itu **BENAR** secara logika (jangan beli di pucuk).
