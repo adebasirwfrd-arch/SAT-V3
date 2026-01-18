@@ -42,7 +42,10 @@
     "quantity": 51.20101137800253,
     "entry_price": 142.38,
     "timestamp": "2026-01-18 15:52:07",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 142.53,
+    "close_timestamp": "2026-01-18 16:42:25",
+    "pnl": 7.680151706701508
   },
   {
     "id": 5,
@@ -199,5 +202,232 @@
     "entry_price": 946.8,
     "timestamp": "2026-01-18 16:16:35",
     "status": "ACTIVE"
+  },
+  {
+    "id": 21,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.06292488340863102,
+    "entry_price": 95238.62,
+    "timestamp": "2026-01-18 16:42:35",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 22,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.056632395067767925,
+    "entry_price": 95238.62,
+    "timestamp": "2026-01-18 16:42:41",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 23,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.050969155560991124,
+    "entry_price": 95238.62,
+    "timestamp": "2026-01-18 16:42:46",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 24,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.04587223518833385,
+    "entry_price": 95238.63,
+    "timestamp": "2026-01-18 16:42:52",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 25,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.04128501166950047,
+    "entry_price": 95238.63,
+    "timestamp": "2026-01-18 16:42:52",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 26,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.03715651050255043,
+    "entry_price": 95238.63,
+    "timestamp": "2026-01-18 16:42:59",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 27,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.033440859452295385,
+    "entry_price": 95238.63,
+    "timestamp": "2026-01-18 16:43:06",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 28,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.030096776667209654,
+    "entry_price": 95238.62,
+    "timestamp": "2026-01-18 16:43:07",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 29,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.027087099000488692,
+    "entry_price": 95238.62,
+    "timestamp": "2026-01-18 16:43:07",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 30,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.02437838910043982,
+    "entry_price": 95238.62,
+    "timestamp": "2026-01-18 16:43:14",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 31,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.021940550190395838,
+    "entry_price": 95238.62,
+    "timestamp": "2026-01-18 16:43:15",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 32,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.01974649517135625,
+    "entry_price": 95238.62,
+    "timestamp": "2026-01-18 16:43:15",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 33,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.017771845654220624,
+    "entry_price": 95238.62,
+    "timestamp": "2026-01-18 16:43:25",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 34,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.015994661088798563,
+    "entry_price": 95238.62,
+    "timestamp": "2026-01-18 16:43:25",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 35,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.01439519346843172,
+    "entry_price": 95238.63,
+    "timestamp": "2026-01-18 16:43:26",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 36,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.012955674121588547,
+    "entry_price": 95238.63,
+    "timestamp": "2026-01-18 16:43:37",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 37,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.01166010670942969,
+    "entry_price": 95238.63,
+    "timestamp": "2026-01-18 16:43:37",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 38,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.010494096038486722,
+    "entry_price": 95238.63,
+    "timestamp": "2026-01-18 16:43:37",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 39,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.009444687426324662,
+    "entry_price": 95238.62,
+    "timestamp": "2026-01-18 16:43:38",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 40,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.008500218683692195,
+    "entry_price": 95238.62,
+    "timestamp": "2026-01-18 16:44:21",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 41,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.007650196815322977,
+    "entry_price": 95238.62,
+    "timestamp": "2026-01-18 16:44:21",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 42,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.006885177133790679,
+    "entry_price": 95238.62,
+    "timestamp": "2026-01-18 16:44:21",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 43,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.006196659420411611,
+    "entry_price": 95238.62,
+    "timestamp": "2026-01-18 16:45:10",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 44,
+    "symbol": "ETH/USDT",
+    "action": "BUY",
+    "quantity": 0.1597645283208258,
+    "entry_price": 3324.55,
+    "timestamp": "2026-01-18 17:01:10",
+    "status": "ACTIVE",
+    "source": "BOT_AUTO_BUY"
+  },
+  {
+    "id": 45,
+    "symbol": "TON/USDT",
+    "action": "BUY",
+    "quantity": 278.24833897910435,
+    "entry_price": 1.718,
+    "timestamp": "2026-01-18 17:04:43",
+    "status": "ACTIVE",
+    "source": "BOT_AUTO_BUY"
   }
 ]

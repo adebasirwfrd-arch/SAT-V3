@@ -564,6 +564,9 @@ async def websocket_endpoint(websocket: WebSocket):
             all_logs.sort(key=lambda x: x.get('timestamp', ''), reverse=True)
             
             # Send update
+            if len(active_transactions) > 0:
+                print(f"DEBUG WS: Sending {len(active_transactions)} active transactions. Sample: {active_transactions[0].get('symbol')} SL={active_transactions[0].get('stop_loss')}")
+            
             await websocket.send_json({
                 "type": "update",
                 "data": data,
