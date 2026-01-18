@@ -470,7 +470,7 @@
         <div class="chart-section">
             <div class="chart-header">
                 <h2>📈 Live Chart</h2>
-                <a href="/chart" class="open-superchart-btn" target="_blank">🚀 Open Superchart</a>
+                <a href="/chart" id="superchart-link" class="open-superchart-btn" target="_blank">🚀 Open Superchart</a>
             </div>
             <iframe src="/chart" class="superchart-iframe" allowfullscreen></iframe>
         </div>
@@ -498,6 +498,8 @@
         const miniCharts = {};
         const oscCharts = {};
         let previousCoins = [];
+
+
 
         function createCard(coin, info) {
             const score = info.council_score || 50;
@@ -639,12 +641,37 @@
 
         function updateTransactions(transactions) {
             const container = document.getElementById('positions-list');
+
+            // Handle empty state
             if (!transactions || transactions.length === 0) {
-                container.innerHTML = '<div style="color:#9CA3AF;font-size:0.7rem;text-align:center;">No active positions</div>';
+                if (container.children.length !== 1 || !container.children[0].textContent.includes('No active positions')) {
+                    container.innerHTML = '<div style="color:#9CA3AF;font-size:0.7rem;text-align:center;">No active positions</div>';
+                }
                 return;
             }
 
-            container.innerHTML = transactions.map(tx => {
+            // Remove "No active positions" if present
+            if (container.children.length === 1 && container.children[0].textContent.includes('No active positions')) {
+                container.innerHTML = '';
+            }
+
+            // Track active symbols to identify removals
+            const activeInfos = new Map(transactions.map(t => [t.symbol, t]));
+
+            // 1. Remove closed positions
+            Array.from(container.children).forEach(child => {
+                const sym = child.getAttribute('data-symbol');
+                if (sym && !activeInfos.has(sym)) {
+                    child.remove();
+                }
+            });
+
+            // 2. Update or Create positions
+            transactions.forEach(tx => {
+                const symbol = tx.symbol;
+                const safeSym = symbol.replace(/[^a-zA-Z0-9]/g, '-');
+                let el = document.getElementById(`tx-${safeSym}`);
+
                 const pnl = tx.pnl || 0;
                 const pnlClass = pnl >= 0 ? 'profit' : 'loss';
                 const pnlStr = pnl >= 0 ? `+$${pnl.toFixed(2)}` : `-$${Math.abs(pnl).toFixed(2)}`;
@@ -654,27 +681,53 @@
                 const badgeClass = source.includes('BOT') ? 'badge-bot' : 'badge-manual';
                 const badgeIcon = source.includes('BOT') ? '🤖' : '👤';
 
-                return `
-                    <div class="tx-item" style="grid-template-columns: 80px 1fr 100px;">
+                // Content for dynamic parts
+                const detailsHTML = `${tx.quantity.toFixed(6)} @ $${tx.entry_price.toFixed(2)}
+                                → <span style="color:${priceColor}">$${currentPrice.toFixed(2)}</span>
+                                ${tx.stop_loss ? `<br><span style="color:#ef5350;font-size:0.65rem;">🛑 SL: $${tx.stop_loss.toFixed(2)}</span>` : ''}`;
+
+                if (!el) {
+                    // Create new row
+                    el = document.createElement('div');
+                    el.className = 'tx-item';
+                    el.id = `tx-${safeSym}`;
+                    el.setAttribute('data-symbol', symbol);
+                    el.style.gridTemplateColumns = '80px 1fr 100px';
+
+                    el.innerHTML = `
                         <div class="tx-symbol">
                             ${tx.symbol.replace('/USDT', '')}
                             <div style="margin-top:2px;">
                                 <span class="tx-badge ${badgeClass}">${badgeIcon}</span>
                             </div>
                         </div>
-                        <div class="tx-details">
-                            ${tx.quantity.toFixed(6)} @ $${tx.entry_price.toFixed(2)}
-                            → <span style="color:${priceColor}">$${currentPrice.toFixed(2)}</span>
-                            ${tx.stop_loss ? `<br><span style="color:#ef5350;font-size:0.65rem;">🛑 SL: $${tx.stop_loss.toFixed(2)}</span>` : ''}
-                        </div>
+                        <div class="tx-details">${detailsHTML}</div>
                         <div class="tx-pnl ${pnlClass}">
-                            ${pnlStr}
+                            <span class="pnl-value">${pnlStr}</span>
                             <div style="margin-top:2px; text-align:right;">
                                 <button class="tx-action-btn" onclick="sellPosition('${tx.symbol}')">Sell ❌</button>
                             </div>
-                        </div>
-                    </div>`;
-            }).join('');
+                        </div>`;
+                    container.appendChild(el);
+                } else {
+                    // Update existing row
+                    // Update Details
+                    const detailsEl = el.querySelector('.tx-details');
+                    if (detailsEl.innerHTML !== detailsHTML) {
+                        detailsEl.innerHTML = detailsHTML;
+                    }
+
+                    // Update PnL Class and Value
+                    const pnlEl = el.querySelector('.tx-pnl');
+                    if (pnlEl.className !== `tx-pnl ${pnlClass}`) {
+                        pnlEl.className = `tx-pnl ${pnlClass}`;
+                    }
+                    const pnlValueEl = el.querySelector('.pnl-value');
+                    if (pnlValueEl && pnlValueEl.textContent !== pnlStr) {
+                        pnlValueEl.textContent = pnlStr;
+                    }
+                }
+            });
         }
 
         function updateBotLogs(logs) {

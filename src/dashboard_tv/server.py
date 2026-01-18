@@ -275,7 +275,7 @@ async def get_data():
 async def get_ohlcv(symbol: str, timeframe: str = "1h", limit: int = 100):
     """Get OHLCV data for chart"""
     symbol = symbol.replace("-", "/")
-    candles = fetch_ohlcv(symbol, timeframe, limit)
+    candles = await asyncio.to_thread(fetch_ohlcv, symbol, timeframe, limit)
     return candles
 
 @app.get("/api/transactions")
@@ -297,7 +297,7 @@ async def send_command(symbol: str, action: str, source: str = "MANUAL"):
     try:
         # Get current price from exchange
         if exchange:
-            ticker = exchange.fetch_ticker(symbol)
+            ticker = await asyncio.to_thread(exchange.fetch_ticker, symbol)
             current_price = ticker['last']
         else:
             # Fallback prices
@@ -459,7 +459,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 symbol = f'{coin}/USDT'
                 try:
                     if exchange:
-                        ticker = exchange.fetch_ticker(symbol)
+                        ticker = await asyncio.to_thread(exchange.fetch_ticker, symbol)
                         price = ticker['last']
                         change_pct = ticker.get('percentage', 0) or 0
                     else:
@@ -545,7 +545,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 symbol = tx['symbol']
                 if exchange:
                     try:
-                        ticker = exchange.fetch_ticker(symbol)
+                        ticker = await asyncio.to_thread(exchange.fetch_ticker, symbol)
                         tx['current_price'] = ticker['last']
                         tx['pnl'] = (ticker['last'] - tx['entry_price']) * tx['quantity']
                         
@@ -612,7 +612,7 @@ async def trading_loop():
             # 2. Check Trailing Stops & Take Profits
             for symbol, holding in list(holdings.items()):
                 # Get current price
-                ticker = exchange.fetch_ticker(symbol) if exchange else {'last': holding['entry_price']}
+                ticker = await asyncio.to_thread(exchange.fetch_ticker, symbol) if exchange else {'last': holding['entry_price']}
                 current_price = ticker['last']
                 
                 # Update Highest Price for Trailing Stop
