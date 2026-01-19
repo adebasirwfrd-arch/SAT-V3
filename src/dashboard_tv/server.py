@@ -439,6 +439,32 @@ async def get_logs():
     """Get system logs"""
     return {"logs": system_logs[-50:]}  # Return last 50 logs
 
+@app.post("/api/strategy/{mode}")
+async def set_strategy(mode: str):
+    """Switch trading strategy between 7 Council and Entry Logic"""
+    global ACTIVE_STRATEGY
+    if mode not in ["7council", "entrylogic"]:
+        return {"status": "error", "message": "Invalid strategy mode. Use '7council' or 'entrylogic'"}
+    
+    ACTIVE_STRATEGY = mode
+    strategy_name = "7 Council (Consensus Voting)" if mode == "7council" else "Entry Logic (Trap + Reclaim + Divergence)"
+    add_log(f"🔄 Strategy switched to: {strategy_name}")
+    
+    return {
+        "status": "ok",
+        "active_strategy": mode,
+        "name": strategy_name
+    }
+
+@app.get("/api/strategy")
+async def get_strategy():
+    """Get current active strategy"""
+    strategy_name = "7 Council" if ACTIVE_STRATEGY == "7council" else "Entry Logic"
+    return {
+        "active_strategy": ACTIVE_STRATEGY,
+        "name": strategy_name
+    }
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     """WebSocket for real-time updates"""
@@ -487,16 +513,61 @@ async def websocket_endpoint(websocket: WebSocket):
                     score = max(20, min(80, score + np.random.randn() * 10))
                     signal = 'BUY' if score >= 60 else 'SELL' if score <= 40 else 'NEUTRAL'
                     
+                    # Calculate Entry Logic parameters
+                    rsi_val = round(50 + np.random.randn() * 15, 1)
+                    # Simulate Entry Logic signal detection (in real use, call EntryLogicMaster)
+                    entry_logic_signal = 'WAITING'
+                    
+                    # Simulate Double Tap state (normally tracked by EntryLogicMaster instance)
+                    attempt_count = np.random.choice([0, 1, 2], p=[0.7, 0.2, 0.1])  # Most coins at 0 attempts
+                    last_trade = np.random.choice(['NONE', 'WIN', 'LOSS'], p=[0.6, 0.3, 0.1])
+                    
+                    entry_logic_params = {
+                        'swing_low': round(price * 0.95, 2),
+                        'liquidity_sweep': False,
+                        'rsi_divergence': False,
+                        'entry_detected': False,
+                        'entry_price': 0,
+                        'stop_loss': 0,
+                        # Double Tap Protocol parameters
+                        'attempt_count': attempt_count,
+                        'max_attempts': 2,
+                        'last_trade_result': last_trade,
+                        'entry_type': 'NORMAL',
+                        'game_theory_status': 'STANDBY'
+                    }
+                    
+                    # Randomly simulate some Entry Logic signals for demo
+                    if np.random.rand() > 0.7:  # 30% chance of signal
+                        entry_logic_params['liquidity_sweep'] = True
+                        entry_logic_params['rsi_divergence'] = True
+                        entry_logic_params['entry_detected'] = True
+                        entry_logic_params['entry_price'] = round(price, 2)
+                        entry_logic_params['stop_loss'] = round(price * 0.98, 2)
+                        entry_logic_signal = 'ENTRY SIGNAL'
+                        entry_logic_params['game_theory_status'] = 'ACTIVE'
+                    
+                    # Simulate revenge entry (if lost and attempting again)
+                    if last_trade == 'LOSS' and attempt_count == 1:
+                        entry_logic_params['entry_type'] = 'REVENGE_ENTRY'
+                        entry_logic_params['game_theory_status'] = 'DOUBLE TAP'
+                        if entry_logic_params['entry_detected']:
+                            entry_logic_signal = 'REVENGE ENTRY'
+                    
                     assets[coin] = {
                         'symbol': symbol,
                         'price': round(price, 2),
                         'price_change': round(change_pct, 2),
+                        # 7 Council data
                         'council_score': round(score, 2),
                         'signal': signal,
-                        'rsi': round(50 + np.random.randn() * 15, 1),
+                        'rsi': rsi_val,
                         'atr': round(price * 0.02, 2),
                         'sentiment': 'HYPE' if change_pct > 2 else 'FEAR' if change_pct < -2 else 'NORMAL',
-                        'regime': 'BULLISH' if change_pct > 0 else 'BEARISH' if change_pct < 0 else 'NEUTRAL'
+                        'regime': 'BULLISH' if change_pct > 0 else 'BEARISH' if change_pct < 0 else 'NEUTRAL',
+                        # Entry Logic data
+                        'entry_logic': entry_logic_params,
+                        'entry_logic_signal': entry_logic_signal
                     }
                     # Update global state for trading loop
                     global_market_data[coin] = assets[coin]
@@ -590,10 +661,17 @@ async def websocket_endpoint(websocket: WebSocket):
 
 
 # Configuration
-TRAILING_STOP_PCT = 0.02  # 2% Trailing Stop
+TRAILING_STOP_PCT = 0.02  # 2% Trailing Stop (7 Council Mode)
 AUTO_TRADE_ENABLED = True
 BUY_THRESHOLD = 70
 SELL_THRESHOLD = 30
+
+# Strategy Selection
+ACTIVE_STRATEGY = "7council"  # "7council" or "entrylogic"
+
+# God Tier Trailing Stop Parameters (Entry Logic Mode)
+GOD_TIER_ATR_MULTIPLIER = 3.0  # Anti-whipsaw multiplier
+GOD_TIER_BREAKEVEN_RATIO = 1.5  # Move to breakeven after 1.5R profit
 
 async def trading_loop():
     """Background task for auto-trading and trailing stops"""
@@ -646,13 +724,34 @@ async def trading_loop():
                     if symbol in holdings:
                         continue
                     
-                    # Use the EXACT score displayed on dashboard
-                    score = data.get('council_score', 50)
+                    # STRATEGY SELECTION: Use selected strategy for trading decision
+                    should_buy = False
+                    buy_reason = ""
                     
-                    if score >= BUY_THRESHOLD:
-                        add_log(f"🤖 Auto-Buy Signal for {symbol} (Score: {score:.1f} > {BUY_THRESHOLD})")
-                        add_log(f"🤖 Auto-Buy Signal for {symbol} (Score: {score:.1f} > {BUY_THRESHOLD})")
-                        await send_command(symbol, "FORCE_BUY", source="BOT_AUTO_BUY")
+                    if ACTIVE_STRATEGY == "7council":
+                        # 7 Council Mode: Use consensus score
+                        score = data.get('council_score', 50)
+                        if score >= BUY_THRESHOLD:
+                            should_buy = True
+                            buy_reason = f"7 Council Score: {score:.1f} >= {BUY_THRESHOLD}"
+                    
+                    elif ACTIVE_STRATEGY == "entrylogic":
+                        # Entry Logic Mode: Use Entry Logic signal
+                        entry_logic = data.get('entry_logic', {})
+                        entry_signal = data.get('entry_logic_signal', 'WAITING')
+                        
+                        # Check for entry signal (includes ENTRY SIGNAL and REVENGE ENTRY)
+                        if entry_logic.get('entry_detected', False):
+                            should_buy = True
+                            entry_type = entry_logic.get('entry_type', 'NORMAL')
+                            game_theory_status = entry_logic.get('game_theory_status', 'STANDBY')
+                            buy_reason = f"Entry Logic: {entry_signal} ({entry_type}, {game_theory_status})"
+                    
+                    # Execute buy if signal triggered
+                    if should_buy:
+                        add_log(f"🤖 Auto-Buy Signal for {symbol} - {buy_reason}")
+                        add_log(f"📋 Active Strategy: {ACTIVE_STRATEGY.upper()}")
+                        await send_command(symbol, "FORCE_BUY", source=f"BOT_{ACTIVE_STRATEGY.upper()}")
 
             await asyncio.sleep(5) # Run every 5 seconds
             

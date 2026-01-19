@@ -7,9 +7,11 @@ from .smart_money_master import SmartMoneyMaster
 from .pattern_master import PatternMaster
 from .geometry_master import GeometryMaster
 from .sentiment_master import SentimentMaster
+from .entry_logic_master import EntryLogicMaster
 
 class TheChairman:
     def __init__(self):
+        # 8 Council Generals - The Full Council
         self.generals = [
             TrendMaster(),
             StructureMaster(),
@@ -17,9 +19,13 @@ class TheChairman:
             IndicatorMaster(),
             SmartMoneyMaster(),
             PatternMaster(),
-            GeometryMaster()
+            GeometryMaster(),
+            EntryLogicMaster()  # 8th Council - Entry Logic (Trap + Reclaim + Divergence)
         ]
         self.sentiment_bot = SentimentMaster()
+        
+        # Entry Logic state for God Tier Trailing
+        self.entry_logic_data = {}
 
     def solicit_votes(self, df: pd.DataFrame) -> dict:
         # 1. Cek Sentimen Dulu (Divisi 2)
@@ -37,7 +43,7 @@ class TheChairman:
             buy_threshold = 50
             print("⚠️ HYPE DETECTED: Lowering Buy Threshold to 50 (Aggressive Mode)")
 
-        # 3. Lakukan Voting 7 Jenderal (Divisi 1)
+        # 3. Lakukan Voting 8 Jenderal (Divisi 1) - Now includes Entry Logic Master
         total_score = 0
         total_weight = 0
         details = {}

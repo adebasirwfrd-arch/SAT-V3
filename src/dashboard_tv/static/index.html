@@ -447,6 +447,34 @@
                         <div class="portfolio-param"><span>Open Positions:</span><strong id="open-positions">0</strong>
                         </div>
                     </div>
+
+                    <!-- Strategy Toggle -->
+                    <div style="margin-top: 0.75rem; border-top: 1px solid #363c4e; padding-top: 0.75rem;">
+                        <div style="font-size: 0.75rem; color: #9CA3AF; margin-bottom: 0.4rem; font-weight: 600;">🎯
+                            Trading Strategy</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;">
+                            <button id="btn-7council" class="strategy-btn"
+                                style="padding: 0.5rem; border: 2px solid #667eea; background: #667eea; color: #fff; border-radius: 5px; font-weight: 600; font-size: 0.7rem; cursor: pointer;"
+                                onclick="setStrategy('7council')">
+                                7 Council
+                            </button>
+                            <button id="btn-entrylogic" class="strategy-btn"
+                                style="padding: 0.5rem; border: 2px solid #363c4e; background: transparent; color: #9CA3AF; border-radius: 5px; font-weight: 600; font-size: 0.7rem; cursor: pointer;"
+                                onclick="setStrategy('entrylogic')">
+                                Entry Logic
+                            </button>
+                        </div>
+                        <div id="strategy-status"
+                            style="margin-top: 0.4rem; font-size: 0.65rem; color: #667eea; text-align: center;">7
+                            Council (Consensus Voting)</div>
+                        <div id="bot-strategy-indicator"
+                            style="margin-top: 0.5rem; padding: 0.4rem; background: rgba(102, 126, 234, 0.1); border: 1px solid #667eea; border-radius: 5px; text-align: center;">
+                            <div style="font-size: 0.65rem; color: #9CA3AF; margin-bottom: 0.2rem;">🤖 AI Bot Strategy:
+                            </div>
+                            <div id="bot-strategy-name" style="font-size: 0.75rem; font-weight: 700; color: #667eea;">7
+                                COUNCIL</div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Transaction Details Card -->
@@ -508,6 +536,45 @@
             const priceChange = info.price_change || 0;
             const councilScores = councilNames.map(() => (Math.random() * 100).toFixed(2));
 
+            // Check active strategy (from global state or button state)
+            const isEntryLogic = document.getElementById('btn-entrylogic')?.style?.background === 'rgb(102, 126, 234)';
+
+            // Build council section (7 Council mode)
+            const councilSection = `
+                <div class="council">
+                    <div class="council-title">⚔️ 7 Council</div>
+                    <div class="council-row">
+                        ${councilNames.map((name, i) => {
+                const s = parseFloat(councilScores[i]);
+                const emoji = s >= 60 ? '🟢' : s <= 40 ? '🔴' : '🟡';
+                return `<div class="council-item">${emoji} ${name}: ${councilScores[i]}</div>`;
+            }).join('')}
+                    </div>
+                </div>`;
+
+            // Build Entry Logic section
+            const entryLogic = info.entry_logic || {};
+            const entryLogicSection = `
+                <div class="council">
+                    <div class="council-title">🎯 Entry Logic + Double Tap</div>
+                    <div class="params" style="margin-top: 8px;">
+                        <div class="param-row"><span>Swing Low:</span><strong>$${entryLogic.swing_low || '0.00'}</strong></div>
+                        <div class="param-row"><span>Liq. Sweep:</span><strong style="color:${entryLogic.liquidity_sweep ? '#26a69a' : '#9CA3AF'}">${entryLogic.liquidity_sweep ? '✅ YES' : '❌ NO'}</strong></div>
+                        <div class="param-row"><span>RSI Div:</span><strong style="color:${entryLogic.rsi_divergence ? '#26a69a' : '#9CA3AF'}">${entryLogic.rsi_divergence ? '✅ YES' : '❌ NO'}</strong></div>
+                        <div class="param-row"><span>Entry Signal:</span><strong style="color:${entryLogic.entry_detected ? '#26a69a' : '#ffa726'}">${info.entry_logic_signal || 'WAITING'}</strong></div>
+                        ${entryLogic.entry_detected ? `
+                            <div class="param-row"><span>Entry Price:</span><strong style="color:#667eea">$${entryLogic.entry_price}</strong></div>
+                            <div class="param-row"><span>Stop Loss:</span><strong style="color:#ef5350">$${entryLogic.stop_loss}</strong></div>
+                        ` : ''}
+                        <div style="margin-top:8px;border-top:1px solid #363c4e;padding-top:8px;">
+                            <div class="param-row"><span>🎮 Game Theory:</span><strong style="color:${entryLogic.game_theory_status === 'DOUBLE TAP' ? '#26a69a' : entryLogic.game_theory_status === 'ACTIVE' ? '#ffa726' : '#9CA3AF'}">${entryLogic.game_theory_status || 'STANDBY'}</strong></div>
+                            <div class="param-row"><span>Attempts:</span><strong style="color:${entryLogic.attempt_count >= 2 ? '#ef5350' : entryLogic.attempt_count >= 1 ? '#ffa726' : '#26a69a'}">${entryLogic.attempt_count || 0}/${entryLogic.max_attempts || 2}</strong></div>
+                            <div class="param-row"><span>Last Trade:</span><strong style="color:${entryLogic.last_trade_result === 'WIN' ? '#26a69a' : entryLogic.last_trade_result === 'LOSS' ? '#ef5350' : '#9CA3AF'}">${entryLogic.last_trade_result || 'NONE'}</strong></div>
+                            <div class="param-row"><span>Entry Type:</span><strong style="color:${entryLogic.entry_type === 'REVENGE_ENTRY' ? '#667eea' : '#9CA3AF'}">${entryLogic.entry_type || 'NORMAL'}</strong></div>
+                        </div>
+                    </div>
+                </div>`;
+
             return `
                 <div class="card" data-coin="${coin}">
                     <div class="card-header">
@@ -525,16 +592,7 @@
                         <div class="param-row"><span>ATR:</span><strong>${info.atr?.toFixed(2) || '0.00'}</strong></div>
                         <div class="param-row"><span>Sentiment:</span><strong style="color:${info.sentiment === 'HYPE' ? '#26a69a' : info.sentiment === 'FEAR' ? '#ef5350' : '#ffa726'}">${info.sentiment || 'NORMAL'}</strong></div>
                     </div>
-                    <div class="council">
-                        <div class="council-title">⚔️ 7 Council</div>
-                        <div class="council-row">
-                            ${councilNames.map((name, i) => {
-                const s = parseFloat(councilScores[i]);
-                const emoji = s >= 60 ? '🟢' : s <= 40 ? '🔴' : '🟡';
-                return `<div class="council-item">${emoji} ${name}: ${councilScores[i]}</div>`;
-            }).join('')}
-                        </div>
-                    </div>
+                    ${isEntryLogic ? entryLogicSection : councilSection}
                     <div class="mini-chart-container" id="mini-${coin}"></div>
                     <div class="osc-container" id="osc-${coin}"></div>
                     <div class="buttons">
@@ -587,6 +645,34 @@
             });
         }
 
+        function destroyAllCharts() {
+            // Destroy all mini charts
+            Object.keys(miniCharts).forEach(coin => {
+                try {
+                    if (miniCharts[coin] && miniCharts[coin].chart) {
+                        miniCharts[coin].chart.remove();
+                    }
+                } catch (e) {
+                    console.error('Error destroying mini chart:', e);
+                }
+            });
+
+            // Destroy all oscillator charts
+            Object.keys(oscCharts).forEach(coin => {
+                try {
+                    if (oscCharts[coin] && oscCharts[coin].chart) {
+                        oscCharts[coin].chart.remove();
+                    }
+                } catch (e) {
+                    console.error('Error destroying osc chart:', e);
+                }
+            });
+
+            // Clear the objects
+            Object.keys(miniCharts).forEach(key => delete miniCharts[key]);
+            Object.keys(oscCharts).forEach(key => delete oscCharts[key]);
+        }
+
         function updateMiniCharts(assets) {
             const now = Math.floor(Date.now() / 1000);
             Object.keys(assets).forEach(coin => {
@@ -636,6 +722,76 @@
                     .then(r => r.json())
                     .then(d => alert(d.message))
                     .catch(e => alert(e.message));
+            }
+        }
+
+        async function setStrategy(mode) {
+            try {
+                const response = await fetch(`/api/strategy/${mode}`, { method: 'POST' });
+                const data = await response.json();
+
+                if (data.status === 'ok') {
+                    // Update button styles
+                    const btn7 = document.getElementById('btn-7council');
+                    const btnEntry = document.getElementById('btn-entrylogic');
+
+                    if (mode === '7council') {
+                        btn7.style.background = '#667eea';
+                        btn7.style.borderColor = '#667eea';
+                        btn7.style.color = '#fff';
+                        btnEntry.style.background = 'transparent';
+                        btnEntry.style.borderColor = '#363c4e';
+                        btnEntry.style.color = '#9CA3AF';
+                    } else {
+                        btnEntry.style.background = '#667eea';
+                        btnEntry.style.borderColor = '#667eea';
+                        btnEntry.style.color = '#fff';
+                        btn7.style.background = 'transparent';
+                        btn7.style.borderColor = '#363c4e';
+                        btn7.style.color = '#9CA3AF';
+                    }
+
+                    // Update status text and bot indicator
+                    document.getElementById('strategy-status').textContent = data.name;
+                    const botStrategyName = document.getElementById('bot-strategy-name');
+                    const botStrategyIndicator = document.getElementById('bot-strategy-indicator');
+
+                    if (mode === '7council') {
+                        botStrategyName.textContent = '7 COUNCIL';
+                        botStrategyIndicator.style.borderColor = '#667eea';
+                        botStrategyIndicator.style.background = 'rgba(102, 126, 234, 0.1)';
+                        botStrategyName.style.color = '#667eea';
+                    } else {
+                        botStrategyName.textContent = 'ENTRY LOGIC (DOUBLE TAP)';
+                        botStrategyIndicator.style.borderColor = '#26a69a';
+                        botStrategyIndicator.style.background = 'rgba(38, 166, 154, 0.1)';
+                        botStrategyName.style.color = '#26a69a';
+                    }
+
+                    // Force card refresh to show new parameters
+                    if (window.currentAssets && window.currentCoins) {
+                        // CRITICAL: Destroy old charts before rebuilding cards
+                        destroyAllCharts();
+                        document.getElementById('cards').innerHTML = window.currentCoins.map(c => createCard(c, window.currentAssets[c])).join('');
+                        setTimeout(() => initMiniCharts(window.currentCoins), 50);
+                    }
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Strategy switch error:', error);
+                alert('Failed to switch strategy');
+            }
+        }
+
+        // Load current strategy on page load
+        async function loadCurrentStrategy() {
+            try {
+                const response = await fetch('/api/strategy');
+                const data = await response.json();
+                setStrategy(data.active_strategy);
+            } catch (error) {
+                console.error('Failed to load strategy:', error);
             }
         }
 
@@ -802,7 +958,7 @@
             const assets = data.assets || {};
             const coins = Object.keys(assets).slice(0, 6);
 
-            // Only rebuild cards if coins changed
+            // Only rebuild cards if coins changed OR strategy changed
             const coinsChanged = JSON.stringify(coins) !== JSON.stringify(previousCoins);
             if (coinsChanged) {
                 document.getElementById('cards').innerHTML = coins.map(c => createCard(c, assets[c])).join('');
@@ -810,6 +966,10 @@
                 // Init charts after DOM update
                 setTimeout(() => initMiniCharts(coins), 50);
             }
+
+            // Store current assets and coins globally for strategy refresh
+            window.currentAssets = assets;
+            window.currentCoins = coins;
 
             // Update mini charts with new data
             updateMiniCharts(assets);
@@ -854,6 +1014,7 @@
 
         window.addEventListener('load', () => {
             connectWebSocket();
+            loadCurrentStrategy(); // Initialize strategy toggle state
         });
     </script>
 </body>
