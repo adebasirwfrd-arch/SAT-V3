@@ -54,7 +54,10 @@
     "quantity": 6.928852794880189,
     "entry_price": 946.91,
     "timestamp": "2026-01-18 15:55:22",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 927.82,
+    "close_timestamp": "2026-01-20 03:30:21",
+    "pnl": -805.4880621085977
   },
   {
     "id": 6,
@@ -63,7 +66,10 @@
     "quantity": 6.235967515392171,
     "entry_price": 946.91,
     "timestamp": "2026-01-18 15:55:23",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 927.82,
+    "close_timestamp": "2026-01-20 03:30:21",
+    "pnl": -805.4880621085977
   },
   {
     "id": 7,
@@ -72,7 +78,10 @@
     "quantity": 5.612370763852954,
     "entry_price": 946.91,
     "timestamp": "2026-01-18 15:55:25",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 927.82,
+    "close_timestamp": "2026-01-20 03:30:21",
+    "pnl": -805.4880621085977
   },
   {
     "id": 8,
@@ -81,7 +90,10 @@
     "quantity": 5.051453767756244,
     "entry_price": 946.85,
     "timestamp": "2026-01-18 15:55:38",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 927.82,
+    "close_timestamp": "2026-01-20 03:30:21",
+    "pnl": -805.4880621085977
   },
   {
     "id": 9,
@@ -90,7 +102,10 @@
     "quantity": 4.546308390980621,
     "entry_price": 946.85,
     "timestamp": "2026-01-18 15:55:39",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 927.82,
+    "close_timestamp": "2026-01-20 03:30:21",
+    "pnl": -805.4880621085977
   },
   {
     "id": 10,
@@ -147,7 +162,10 @@
     "quantity": 2.6855139706173206,
     "entry_price": 946.51,
     "timestamp": "2026-01-18 16:08:43",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 927.82,
+    "close_timestamp": "2026-01-20 03:30:21",
+    "pnl": -805.4880621085977
   },
   {
     "id": 15,
@@ -156,7 +174,10 @@
     "quantity": 2.4169625735555886,
     "entry_price": 946.51,
     "timestamp": "2026-01-18 16:09:09",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 927.82,
+    "close_timestamp": "2026-01-20 03:30:21",
+    "pnl": -805.4880621085977
   },
   {
     "id": 16,
@@ -165,7 +186,10 @@
     "quantity": 2.1746000432472434,
     "entry_price": 946.8,
     "timestamp": "2026-01-18 16:16:34",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 927.82,
+    "close_timestamp": "2026-01-20 03:30:21",
+    "pnl": -805.4880621085977
   },
   {
     "id": 17,
@@ -174,7 +198,10 @@
     "quantity": 1.9571400389225195,
     "entry_price": 946.8,
     "timestamp": "2026-01-18 16:16:34",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 927.82,
+    "close_timestamp": "2026-01-20 03:30:21",
+    "pnl": -805.4880621085977
   },
   {
     "id": 18,
@@ -183,7 +210,10 @@
     "quantity": 1.7614260350302675,
     "entry_price": 946.8,
     "timestamp": "2026-01-18 16:16:35",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 927.82,
+    "close_timestamp": "2026-01-20 03:30:21",
+    "pnl": -805.4880621085977
   },
   {
     "id": 19,
@@ -192,7 +222,10 @@
     "quantity": 1.5852834315272406,
     "entry_price": 946.8,
     "timestamp": "2026-01-18 16:16:35",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 927.82,
+    "close_timestamp": "2026-01-20 03:30:21",
+    "pnl": -805.4880621085977
   },
   {
     "id": 20,
@@ -201,7 +234,10 @@
     "quantity": 1.4267550883745164,
     "entry_price": 946.8,
     "timestamp": "2026-01-18 16:16:35",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 927.82,
+    "close_timestamp": "2026-01-20 03:30:21",
+    "pnl": -805.4880621085977
   },
   {
     "id": 21,
@@ -210,7 +246,10 @@
     "quantity": 0.06292488340863102,
     "entry_price": 95238.62,
     "timestamp": "2026-01-18 16:42:35",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 22,
@@ -219,7 +258,10 @@
     "quantity": 0.056632395067767925,
     "entry_price": 95238.62,
     "timestamp": "2026-01-18 16:42:41",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 23,
@@ -228,7 +270,10 @@
     "quantity": 0.050969155560991124,
     "entry_price": 95238.62,
     "timestamp": "2026-01-18 16:42:46",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 24,
@@ -237,7 +282,10 @@
     "quantity": 0.04587223518833385,
     "entry_price": 95238.63,
     "timestamp": "2026-01-18 16:42:52",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 25,
@@ -246,7 +294,10 @@
     "quantity": 0.04128501166950047,
     "entry_price": 95238.63,
     "timestamp": "2026-01-18 16:42:52",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 26,
@@ -255,7 +306,10 @@
     "quantity": 0.03715651050255043,
     "entry_price": 95238.63,
     "timestamp": "2026-01-18 16:42:59",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 27,
@@ -264,7 +318,10 @@
     "quantity": 0.033440859452295385,
     "entry_price": 95238.63,
     "timestamp": "2026-01-18 16:43:06",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 28,
@@ -273,7 +330,10 @@
     "quantity": 0.030096776667209654,
     "entry_price": 95238.62,
     "timestamp": "2026-01-18 16:43:07",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 29,
@@ -282,7 +342,10 @@
     "quantity": 0.027087099000488692,
     "entry_price": 95238.62,
     "timestamp": "2026-01-18 16:43:07",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 30,
@@ -291,7 +354,10 @@
     "quantity": 0.02437838910043982,
     "entry_price": 95238.62,
     "timestamp": "2026-01-18 16:43:14",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 31,
@@ -300,7 +366,10 @@
     "quantity": 0.021940550190395838,
     "entry_price": 95238.62,
     "timestamp": "2026-01-18 16:43:15",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 32,
@@ -309,7 +378,10 @@
     "quantity": 0.01974649517135625,
     "entry_price": 95238.62,
     "timestamp": "2026-01-18 16:43:15",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 33,
@@ -318,7 +390,10 @@
     "quantity": 0.017771845654220624,
     "entry_price": 95238.62,
     "timestamp": "2026-01-18 16:43:25",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 34,
@@ -327,7 +402,10 @@
     "quantity": 0.015994661088798563,
     "entry_price": 95238.62,
     "timestamp": "2026-01-18 16:43:25",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 35,
@@ -336,7 +414,10 @@
     "quantity": 0.01439519346843172,
     "entry_price": 95238.63,
     "timestamp": "2026-01-18 16:43:26",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 36,
@@ -345,7 +426,10 @@
     "quantity": 0.012955674121588547,
     "entry_price": 95238.63,
     "timestamp": "2026-01-18 16:43:37",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 37,
@@ -354,7 +438,10 @@
     "quantity": 0.01166010670942969,
     "entry_price": 95238.63,
     "timestamp": "2026-01-18 16:43:37",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 38,
@@ -363,7 +450,10 @@
     "quantity": 0.010494096038486722,
     "entry_price": 95238.63,
     "timestamp": "2026-01-18 16:43:37",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 39,
@@ -372,7 +462,10 @@
     "quantity": 0.009444687426324662,
     "entry_price": 95238.62,
     "timestamp": "2026-01-18 16:43:38",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 40,
@@ -381,7 +474,10 @@
     "quantity": 0.008500218683692195,
     "entry_price": 95238.62,
     "timestamp": "2026-01-18 16:44:21",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 41,
@@ -390,7 +486,10 @@
     "quantity": 0.007650196815322977,
     "entry_price": 95238.62,
     "timestamp": "2026-01-18 16:44:21",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 42,
@@ -399,7 +498,10 @@
     "quantity": 0.006885177133790679,
     "entry_price": 95238.62,
     "timestamp": "2026-01-18 16:44:21",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 43,
@@ -408,7 +510,10 @@
     "quantity": 0.006196659420411611,
     "entry_price": 95238.62,
     "timestamp": "2026-01-18 16:45:10",
-    "status": "ACTIVE"
+    "status": "CLOSED",
+    "close_price": 93117.23,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -1216.5744286224217
   },
   {
     "id": 44,
@@ -417,8 +522,11 @@
     "quantity": 0.1597645283208258,
     "entry_price": 3324.55,
     "timestamp": "2026-01-18 17:01:10",
-    "status": "ACTIVE",
-    "source": "BOT_AUTO_BUY"
+    "status": "CLOSED",
+    "source": "BOT_AUTO_BUY",
+    "close_price": 3221.71,
+    "close_timestamp": "2026-01-20 03:21:35",
+    "pnl": -16.43018409251374
   },
   {
     "id": 45,
@@ -427,6 +535,55 @@
     "quantity": 278.24833897910435,
     "entry_price": 1.718,
     "timestamp": "2026-01-18 17:04:43",
+    "status": "CLOSED",
+    "source": "BOT_AUTO_BUY",
+    "close_price": 1.597,
+    "close_timestamp": "2026-01-20 03:21:36",
+    "pnl": -33.66804901647163
+  },
+  {
+    "id": 46,
+    "symbol": "XRP/USDT",
+    "action": "BUY",
+    "quantity": 4865.463716936402,
+    "entry_price": 2.0139,
+    "timestamp": "2026-01-20 03:35:19",
+    "status": "CLOSED",
+    "source": "BOT_AUTO_BUY",
+    "close_price": 1.9695,
+    "close_timestamp": "2026-01-20 10:04:10",
+    "pnl": -216.02658903197698
+  },
+  {
+    "id": 47,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.0946713507069502,
+    "entry_price": 93150.69,
+    "timestamp": "2026-01-20 04:10:47",
+    "status": "CLOSED",
+    "source": "BOT_AUTO_BUY",
+    "close_price": 93311.99,
+    "close_timestamp": "2026-01-20 05:07:52",
+    "pnl": 15.270488869031396
+  },
+  {
+    "id": 48,
+    "symbol": "BTC/USDT",
+    "action": "BUY",
+    "quantity": 0.10580821209510637,
+    "entry_price": 92417.04,
+    "timestamp": "2026-01-20 10:27:17",
+    "status": "ACTIVE",
+    "source": "BOT_AUTO_BUY"
+  },
+  {
+    "id": 49,
+    "symbol": "BNB/USDT",
+    "action": "BUY",
+    "quantity": 9.465591387544753,
+    "entry_price": 929.75,
+    "timestamp": "2026-01-20 10:42:35",
     "status": "ACTIVE",
     "source": "BOT_AUTO_BUY"
   }

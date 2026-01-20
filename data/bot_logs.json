@@ -108,5 +108,55 @@
     "timestamp": "2026-01-18 16:41:31",
     "type": "TRADE",
     "message": "SELL 3.294474 ETH/USDT @ $3322.16 (PnL: +$20.48)"
+  },
+  {
+    "timestamp": "2026-01-20 03:21:35",
+    "type": "TRADE",
+    "message": "SELL 0.573479 BTC/USDT @ $93117.23 (PnL: -$1216.57)"
+  },
+  {
+    "timestamp": "2026-01-20 03:21:35",
+    "type": "TRADE",
+    "message": "SELL 0.159765 ETH/USDT @ $3221.71 (PnL: -$16.43)"
+  },
+  {
+    "timestamp": "2026-01-20 03:21:36",
+    "type": "TRADE",
+    "message": "SELL 278.248339 TON/USDT @ $1.60 (PnL: -$33.67)"
+  },
+  {
+    "timestamp": "2026-01-20 03:30:21",
+    "type": "TRADE",
+    "message": "SELL 42.382634 BNB/USDT @ $927.82 (PnL: -$805.49)"
+  },
+  {
+    "timestamp": "2026-01-20 03:35:19",
+    "type": "TRADE",
+    "message": "BUY 4865.463717 XRP/USDT @ $2.01 ($9798.56)"
+  },
+  {
+    "timestamp": "2026-01-20 04:10:47",
+    "type": "TRADE",
+    "message": "BUY 0.094671 BTC/USDT @ $93150.69 ($8818.70)"
+  },
+  {
+    "timestamp": "2026-01-20 05:07:52",
+    "type": "TRADE",
+    "message": "SELL 0.094671 BTC/USDT @ $93311.99 (PnL: +$15.27)"
+  },
+  {
+    "timestamp": "2026-01-20 10:04:10",
+    "type": "TRADE",
+    "message": "SELL 4865.463717 XRP/USDT @ $1.97 (PnL: -$216.03)"
+  },
+  {
+    "timestamp": "2026-01-20 10:27:17",
+    "type": "TRADE",
+    "message": "BUY 0.105808 BTC/USDT @ $92417.04 ($9778.48)"
+  },
+  {
+    "timestamp": "2026-01-20 10:42:35",
+    "type": "TRADE",
+    "message": "BUY 9.465591 BNB/USDT @ $929.75 ($8800.63)"
   }
 ]

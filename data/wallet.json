@@ -1,35 +1,21 @@
 {
-  "cash": 4302.275817294912,
+  "cash": 79205.70233312761,
   "holdings": {
-    "BNB/USDT": {
-      "quantity": 42.382634414136874,
-      "entry_price": 946.825143810502,
-      "total_cost": 40128.94392423308,
-      "current_value": 40127.87826330479,
-      "highest_price": 946.825143810502
-    },
     "BTC/USDT": {
-      "quantity": 0.5734788775404585,
-      "entry_price": 95238.62361407708,
-      "total_cost": 54617.33896869912,
-      "current_value": 54617.33689610226,
-      "highest_price": 95295.38
+      "quantity": 0.10580821209510637,
+      "entry_price": 92417.04,
+      "total_cost": 9778.481769521928,
+      "current_value": 9778.481769521928,
+      "highest_price": 92599.32
     },
-    "ETH/USDT": {
-      "quantity": 0.1597645283208258,
-      "entry_price": 3324.55,
-      "total_cost": 531.1451626290014,
-      "current_value": 531.1451626290014,
-      "highest_price": 3324.55
-    },
-    "TON/USDT": {
-      "quantity": 278.24833897910435,
-      "entry_price": 1.718,
-      "total_cost": 478.0306463661013,
-      "current_value": 478.0306463661013,
-      "highest_price": 1.718
+    "BNB/USDT": {
+      "quantity": 9.465591387544753,
+      "entry_price": 929.75,
+      "total_cost": 8800.633592569735,
+      "current_value": 8800.633592569735,
+      "highest_price": 929.75
     }
   },
-  "realized_pnl": 57.73451922220738,
+  "realized_pnl": -2215.182304780743,
   "max_balance": 100056.66885829392
 }
